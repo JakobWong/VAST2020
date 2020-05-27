@@ -5,8 +5,8 @@ menu = [
       action: function(d, i) {
         d.Status = "Correct";
         d3.select(this)
-          .selectAll('circle')
-          .attr("fill","green");
+          .select("circle")
+          .style("stroke","green");
         console.log(this)
       },
       disabled: false // optional, defaults to false
@@ -18,7 +18,8 @@ menu = [
         new_data[i].Status = "Incorrect";
         console.log(new_data[i])
         d3.select(this)
-          .attr("opacity",0.3)
+          .select("circle")
+          .style("stroke","red")
       }
     }
   ]

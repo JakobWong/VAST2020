@@ -17,7 +17,7 @@ Apparently the machine-leanring-based classifier is very very poor at detecting 
 
 1. Left click a dot to display the related image and check if it is correctly classified.
 
-2. Right click a dot to tag the status of classification as "correctly classified" or "misclassified". Once being tagged as "correctly classified", a dot turns green. Contrast to that tagged as "misclassified" makes it less visible.
+2. Right click a dot to tag the status of classification as "correctly classified" or "misclassified". Once being tagged as "correctly classified", a dot is outlined green. Contrast to that being tagged as "misclassified" outlines the dot red
 
 3. For relabeling misclassified data, hit the `Show Incorrect Data Only` button which makes incorrectly labeled data samples the only visible ones. In this mode, Left Click a dot to see the related image. Right click to select the correct label you think the object in the image should be classified as.
 

@@ -107,7 +107,7 @@ function correct_data_only(){
     //Draw bubbles
     svg.selectAll("g.node")
        .select("circle")
-       .attr("opacity",function(d){return (d.Status == "Incorrect")? 0.3: 1.0;})
+       .attr("opacity",function(d){return 1.0;})
 
   }
 }
@@ -152,7 +152,7 @@ function incorrect_data_only(){
     //Draw bubbles
     svg.selectAll("g.node")
        .select("circle")
-       .attr("opacity",function(d){return (d.Status == "Incorrect")? 0.3: 1.0;})
+       .attr("opacity",function(d){return 1.0;})
 
     svg.selectAll("g.node")
        .on('contextmenu', d3.contextMenu(menu, {
@@ -228,7 +228,15 @@ function read_all_data(){
        .append("circle")
        .attr("r", function(d) { return d.r0; })
        .attr("fill", function(d) { return colorScale(d.Label)})
-       .attr("opacity", function(d){ return (d.Status == "Incorrect") ? 0.3 : 1.0});
+       .style("stroke-width", 2.0)
+       .style("stroke", function(d){ 
+        if (d.Status == "Incorrect"){
+          return "red";
+        }
+        else if (d.Status == "Correct"){
+          return "green";
+        }
+        return "transparent";});
 
     var labels = ["canadaPencil", "giftBag", "hairClip", "silverStraw", "cloudSign",
                         "redBow", "turtle", "gClamp", "pumpkinNotes", "rainbowPens", "glassBead",
