@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Google fonts Second Reference-->  
+<link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500&display=swap" rel="stylesheet">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.0/css/bootstrap.min.css">
+
+<!-- Connecting with D3 library-->
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="force-chart.js"></script>
+
+<!-- Creating the headlines -->
+<!-- <p id="h1"> Multiple Beeswarm Chart for question 1 </p> -->
+<button id="ResultSaver" onclick="SaveResult()"></button>
+<button id="correctDataViewer" onclick="correct_data_only() ">Show Correct Data Only</button>
+<button id="incorrectDataViewer" onclick="incorrect_data_only() ">Show Incorrect Data Only</button>
+<!-- <button id="resultReader"></div> -->
+<!-- <button id="resultReader"></div> -->
+<div id="link">Redesigned by Jinbin Huang | 
+<a href="https://jakobwong.github.io">JinbinHuang</a></div>
+
+<!-- Create the charting area as a div with a sepecifi id -->  
+<div id="my_dataviz"></div>
+
+<!-- Div for displaying image -->
+<div id="image_div">
+  <canvas id="my_canvas">
+  </canvas>
+</div>
+
+<a id="relabelBtn" data-target="#myModal" role="button" class="btn" data-toggle="modal" style="display:none;">Save Bounding Box</a>
+<div class="modal" id="myModal" role="dialog" aria-labelledby="myModalLabel" style="display:none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Choose a Label</h3>
+  </div>
+    <div class="modal-body" onchange="SetLabel()">
+      <select id="selectLabel">
+        <option value="birdCall">birdCall</option>
+        <option value="blueSunglasses">blueSunglasses</option>
+        <option value="brownDie">brownDie</option>
+        <option value="cactusPaper">cactusPaper</option>
+
+        <option value="canadaPencil">canadaPencil</option>
+        <option value="carabiner">carabiner</option>
+        <option value="cloudSign">cloudSign</option>
+        <option value="cowbell">cowbell</option>
+
+        <option value="cupcakePaper">cupcakePaper</option>
+        <option value="eyeball">eyeball</option>
+        <option value="foamDart">foamDart</option>
+        <option value="gClamp">gClamp</option>
+
+        <option value="giftBag">giftBag</option>
+        <option value="glassBead">glassBead</option>
+        <option value="gyroscope">gyroscope</option>
+        <option value="hairClip">hairClip</option>
+
+        <option value="hairRoller">hairRoller</option>
+        <option value="lavenderDie">lavenderDie</option>
+        <option value="legoBracelet">legoBracelet</option>
+        <option value="metalKey">metalKey</option>
+
+        <option value="miniCards">miniCards</option>
+        <option value="noisemaker">noisemaker</option>
+        <option value="paperPlate">paperPlate</option>
+        <option value="partyFavor">partyFavor</option>
+
+        <option value="pinkCandle">pinkCandle</option>
+        <option value="pinkEraser">pinkEraser</option>
+        <option value="plaidPencil">plaidPencil</option>
+        <option value="pumpkinNotes">pumpkinNotes</option>
+
+        <option value="rainbowPens">rainbowPens</option>
+        <option value="redBow">redBow</option>
+        <option value="redDart">redDart</option>
+        <option value="redWhistle">redWhistle</option>
+
+        <option value="rubiksCube">rubiksCube</option>
+        <option value="sign">sign</option>
+        <option value="silverStraw">silverStraw</option>
+        <option value="spiderRing">spiderRing</option>
+
+        <option value="stickerBox">stickerBox</option>
+        <option value="trophy">trophy</option>
+        <option value="vancouverCards">vancouverCards</option>
+        <option value="voiceRecorder">voiceRecorder</option>
+
+        <option value="yellowBag">yellowBag</option>
+        <option value="yellowBalloon">yellowBalloon</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+  </div>
+
+<style>
+
+/*Defining text stylings*/ 
+  
+#h1 {
+  font-size: 50px;
+  margin: 0px 0px 2px 0px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 100;
+  font-variant: small-caps slashed-zero;
+  color: #f206d3;
+  }
+  
+#h2 {
+  font-size: 20px;
+  margin: 0px 0px 0px 0px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 200;
+  font-variant: small-caps slashed-zero;
+  color: #478adb;
+  }
+  
+#link {
+  font-family: 'Barlow', sans-serif;
+  font-size: 6px;
+  font-variant: small-caps slashed-zero;
+  margin: 8px 10px 2px 4px;
+  color: #778287;
+}
+ 
+a:link, a:visited, a:active {
+  text-decoration: none;
+  color: #778287;
+  border-bottom: 0.6px dotted #D1D5D7;
+}
+  
+body {
+  font-family: 'Barlow', sans-serif;
+  background-color:white;
+}
+          
+/*Defining axis stylings*/
+
+.x-axis text,  .y-axis text {
+        font-family: 'Barlow', sans-serif;
+        font-weight: 100;
+        font-size:10px;
+        opacity:0.8;
+        fill: #778287;
+      }
+
+.y-axis path, .x-axis path {
+        fill: none;
+        stroke-width: 0;
+        stroke-opacity:1;
+        stroke: #778287;
+      }
+
+.x-axis line, .y-axis line {
+        fill: none;
+        stroke-width: 0;
+        stroke-opacity:1;
+        stroke: #778287;
+      }
+  
+/*Defining chart stylings*/
+    
+.legend {
+        font-family: 'Barlow', sans-serif;
+        font-weight: 100;
+        font-size:10px;
+        opacity:0.8;
+        fill: #778287;
+      }
+ 
+.legend {
+        font-family: 'Barlow', sans-serif;
+        font-weight: 100;
+        font-size:14px;
+        opacity:0.8;
+        fill: #778287;
+      }
+
+.legend circle {
+        fill: none;
+        stroke-width: 3;
+        stroke-opacity:1;
+        stroke: #778287;
+      }
+
+div.tooltip { 
+    position: absolute;     
+    text-align: center;     
+}
+
+.d3-context-menu {
+  position: absolute;
+  display: none;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  min-width: 150px;
+  border: 1px solid #d4d4d4;
+
+  z-index:1200;
+}
+
+.d3-context-menu ul {
+  list-style-type: none;
+  margin: 4px 0px;
+  padding: 0px;
+  cursor: default;
+}
+
+.d3-context-menu ul li {
+  padding: 4px 16px;
+}
+
+.d3-context-menu ul li:hover {
+  background-color: #4677f8;
+  color: #fefefe;
+}
+
+  
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.0.0/math.js"></script>
+<script src="d3-context-menu.js"></script>
+<script src="menus.js"></script>
+<script src="index.js"></script>
+<script src="result_rw.js"></script>
+ --><!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.0/js/bootstrap.min.js"></script>

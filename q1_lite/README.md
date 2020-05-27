@@ -1,3 +1,0 @@
-# Initial visualization for Q1
-
-In this visualization, the user can select a Label and see its classification result given by the trained classifier. The classification results are laid out in a beeswarm chart. Results with higher confidence appear on the right side of the chart while results with low confidence appear on the left side of the chart. Distribution of the classification result is easy to comprehend.
