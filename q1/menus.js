@@ -6,7 +6,8 @@ menu = [
         d.Status = "Correct";
         d3.select(this)
           .select("circle")
-          .style("stroke","green");
+          .style("stroke","green")
+          .style("stroke-width", 2 + 4 * d.Score);
         console.log(this)
       },
       disabled: false // optional, defaults to false
@@ -20,6 +21,7 @@ menu = [
         d3.select(this)
           .select("circle")
           .style("stroke","red")
+          .style("stroke-width", 2 + 4 * d.Score);
       }
     }
   ]

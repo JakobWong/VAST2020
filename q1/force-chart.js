@@ -35,7 +35,8 @@ d3.forceChart = function() {
         d.x0 = x(d);
         d.y0 = y(d);
         // d.r0 = r(d);
-        d.r0 = 3.9;
+        console.log(d)
+        d.r0 = 2.0 + 6.0*d.Score;
         return d;    
       });
       
@@ -55,8 +56,8 @@ d3.forceChart = function() {
             ctx.canvas.width = math.ceil(img.width/resize_scale);
             ctx.canvas.height = math.ceil(img.height/resize_scale);
             ctx.drawImage(img, 0, 0, ctx.canvas.width, ctx.canvas.height);
-            var box_left = math.ceil(+d.x/resize_scale);
-            var box_top = math.ceil(+d.y/resize_scale);
+            var box_left = math.ceil(+d.left/resize_scale);
+            var box_top = math.ceil(+d.top/resize_scale);
             var box_width = math.ceil(+d.Width/resize_scale);
             var box_height = math.ceil(+d.Height/resize_scale);
             // ctx.beginPath();
@@ -71,11 +72,11 @@ d3.forceChart = function() {
           onClose: function() {},
           position: function(d, i) {
             var elm = this;
-            var bounds = elm.getBoundingClientRect();
+            // var bounds = getElementAbsolutePos(this);
             // eg. align bottom-left
             return {
-              top: bounds.top,
-              left: bounds.left
+              top: d.y + margin.top,
+              left: d.x + margin.left
             }
           }
         })) // attach menu to element

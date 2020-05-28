@@ -134,12 +134,9 @@ function incorrect_data_only(){
           onOpen: function() {},
           onClose: function() {},
           position: function(d, i) {
-            var elm = this;
-            var bounds = elm.getBoundingClientRect();
-            // eg. align bottom-left
             return {
-              top: bounds.top,
-              left: bounds.left
+              top: d.y + margin.top,
+              left: d.x + margin.left
             }
           }
         }))
@@ -159,12 +156,9 @@ function incorrect_data_only(){
           onOpen: function() {},
           onClose: function() {},
           position: function(d, i) {
-            var elm = this;
-            var bounds = elm.getBoundingClientRect();
-            // eg. align bottom-left
             return {
-              top: bounds.top,
-              left: bounds.left
+              top: d.y + margin.top,
+              left: d.x + margin.left
             }
           }
         }))
