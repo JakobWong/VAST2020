@@ -43,6 +43,25 @@ menu2 = [
     }
   ]
 
+menu3 = [
+    {
+      title: 'correctly classified',
+      action: function(d, i) {
+        console.log(d)
+        // d.Status = "Correct";
+      },
+      disabled: false // optional, defaults to false
+    },
+    {
+      title: 'misclassified',
+      action: function(d, i) {
+
+        // d.Status = "Incorrect";
+        // new_data[i].Status = "Incorrect";
+      }
+    }
+  ]
+
 function SetLabel(){
 
   var e = document.getElementById("selectLabel");
@@ -52,3 +71,4 @@ function SetLabel(){
   new_data[nodeIndex].Status = "Correct";
   return text;
 }
+

@@ -22,15 +22,6 @@ var yAxis = d3.svg.axis()
                   .orient("left");    
 
 //Draw y axes
-// d3.select("#bloc1")
-//   .append("svg")
-//   .attr("height",height + margin.top + margin.bottom)
-//   .attr("width",50)
-//   .append("g")
-//   .attr("class", "y-axis ")
-//   .attr("transform", "translate(" + margin.left +"," + margin.top + ")")
-//   .call(yAxis)
-
 d3.select("#bloc1")
   .append("svg")
   .attr("height",height + margin.top + margin.bottom)
@@ -51,6 +42,14 @@ var svg = d3.select("#bloc2")
             .attr("height", height + margin.top + margin.bottom + 50)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// //Container for gallery
+// var svg2 = d3.select("#my_exmaple_images")
+//             .append("svg")
+//             .attr("width", 1000)
+//             .attr("height", 1000)
+//             .append("g")
+//             .attr("transform", "translate(" + margin.left + ",0)");
 
 // Define the div for the img_tooltip
 var image_div = d3.select("#image_div") 
@@ -207,7 +206,7 @@ function read_all_data(){
                      "Status":d.Status,"Score":d.Score});
     })
 
-    console.log(data)
+    // console.log(data)
              
     //Draw x axes
     svg.append("g")
@@ -219,24 +218,8 @@ function read_all_data(){
        .attr("dy", -6)
        .style("font-size", "15px")
        .style("text-anchor", "center")
-       // .text("Score");
      
-      // .selectAll(".tick line")
-      // // .attr("x2", width)
-      // .attr("stroke-dasharray", "1, 2");
-    
-    // // Draw example images
-    // svg.append("g")
-    //    .attr("class", "y-axis ")
-    //    .attr("transform", "translate(-50," + 0 + ")")
-    //    .call(yAxis)
-    //    .selectAll(".tick line")
-    //    .attr("x2", width)
-    //    .attr("stroke-dasharray", "1, 2");
 
-    // // Draw legend
-    // svg.append("g")
-    //    .call(legend);
                 
     //Draw bubbles
     svg.append("g")
@@ -244,6 +227,7 @@ function read_all_data(){
        .attr("class", "bubbles")
        .selectAll(".node")
        .append("circle")
+       .attr("class", function(d){return d.Id+"_"+d.Label;})
        .attr("r", function(d) { return d.r0; })
        .attr("fill", function(d) { return colorScale(d.Label)})
        .style("stroke-width", 2.0)
@@ -278,7 +262,6 @@ function read_all_data(){
                    .attr("height", 80)
                    .attr("x", -50)
                    .attr("y", 10)
-                   .style("opcaity",0.7)
 
     var image_borders = svg.select(".x-axis").selectAll(".tick")
                    // .append('svg')
@@ -293,14 +276,123 @@ function read_all_data(){
                   .style('stroke',"gold")
                   .style('stroke-width',"10");
 
+                show_gallery(d.label);
                 // show all images
                 })
                 .on('dblclick',function(){
                   d3.select(this)
-                   .style('stroke','transparent')
+                    .style('stroke','transparent');
+
+                remove_gallery();
                 })
 
+    function show_gallery(label){
+      // svg2.selectAll("g").remove();
+
+      var selected_subset = data.filter(function(d){return d.Label == label});
+      var num_col = 60;
+      var num_row = math.ceil(selected_subset.length / num_col);
+      selected_subset.sort((a,b)=> b.Score - a.Score);
+
+      //Container for gallery
+      var svg2 = d3.select("#my_exmaple_images")
+                  .attr("class","mainchart")
+                  .append("svg")
+                  .attr("transform", "translate(" + margin.left + ",0)")
+                  .attr("width", num_col * 110)
+                  .attr("height", num_row * 90)
+                  .append("g")
+                  // .attr("transform", "translate(" + margin.left + ",0)");
+
+      svg2 = svg2.selectAll("g")
+                 .data(selected_subset).enter()
+                 .append("g")
+
+      var subset_images = svg2.append("svg:image")
+                              .attr("xlink:href", function (d) { return d.FileName ; })
+                              .attr("width", 100)
+                              .attr("height", 80)
+                              .attr("x", function(d,i){return (i % num_col)*110;})
+                              .attr("y", function(d,i){return math.floor(i/ num_col)*90;})
+
+
+      var menu3 =  [
+        {
+          title: 'correctly classified',
+          action: function(d, i) {
+            d3.selectAll("rect."+ d.Id+"_"+d.Label)
+              .style("stroke","green")
+              .style("stroke-width",10)
+              
+            d.Status = "Correct";
+            d3.selectAll("circle." + d.Id+"_"+d.Label)
+              .style("stroke","green")
+              .style("stroke-width", 2 + 4 * d.Score);
+          },
+          disabled: false // optional, defaults to false
+        },
+        {
+          title: 'misclassified',
+          action: function(d, i) {
+            d3.selectAll("rect."+ d.Id+"_"+d.Label)
+              .style("stroke","red")
+              .style("stroke-width",10)
+
+            d.Status = "Incorrect";
+            new_data[i].Status = "Incorrect";
+            d3.selectAll("circle." + d.Id+"_"+d.Label)
+              .style("stroke","red")
+              .style("stroke-width", 2 + 4 * d.Score);
+          }
+        }
+      ]
+      var subset_borders = svg2.append('rect')
+                              .attr('class', function(d){return d.Id+"_"+d.Label})
+                              .attr('width', 100)
+                              .attr('height', 70)
+                              .attr("x", function(d,i){return (i % num_col)*110;})
+                              .attr("y", function(d,i){return math.floor(i/ num_col)*90;})
+                              .attr("fill","transparent")
+                              .on('click', function(d){
+                                // console.log(d3.selectAll("circle." + d.Id+"_"+d.Label))
+                                d3.selectAll("circle." + d.Id+"_"+d.Label)
+                                  .attr("r",15)
+                                  .attr("opacity",0.6);
+
+                                d3.selectAll("rect." + d.Id+"_"+d.Label)
+                                  .style("stroke","gold")
+                                  .style("stroke-width",10)
+                              })
+                              .on('dblclick',function(d){
+                                d3.selectAll("rect." + d.Id+"_"+d.Label)
+                                  .style("stroke","transparent");
+
+                                d3.selectAll("circle." + d.Id+"_"+d.Label)
+                                  .attr("r",function(d){return d.r0})
+                                  .attr("opacity",1.0)})
+                              .on('contextmenu', d3.contextMenu(menu3, {
+                                onOpen: function() {},
+                                onClose: function() {},
+                                position: function(d, i) {
+                                  var elm = this;
+                                  var bounds = elm.getBoundingClientRect();
+                                  console.log(bounds)
+                                  // eg. align bottom-left
+                                  return {
+                                    top: 50 + bounds.top + bounds.height,
+                                    left: bounds.left
+                                  }
+                                }
+                              }))
+
+    }
+
+    function remove_gallery(){
+       var svg2 = d3.select("#my_exmaple_images")
+       svg2.selectAll("svg").remove();
+    }
+
   
-  console.log(new_data); 
+  // console.log(new_data); 
   });
 }
