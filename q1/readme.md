@@ -15,10 +15,18 @@ Apparently the machine-leanring-based classifier is very very poor at detecting 
 
 ## How to use
 
-1. Left click a dot to display the related image and check if it is correctly classified.
+1. Click a label image at the bottom, under the label text, to display all images classified as the label.
 
-2. Right click a dot to tag the status of classification as "correctly classified" or "misclassified". Once being tagged as "correctly classified", a dot is outlined green. Contrast to that being tagged as "misclassified" outlines the dot red
+2. Among the displayed images, left click to select an image, reclick to deselect. You can select as many images as you want. When an image is selected, its border turns yellow.
 
-3. For relabeling misclassified data, hit the `Show Incorrect Data Only` button which makes incorrectly labeled data samples the only visible ones. In this mode, Left Click a dot to see the related image. Right click to select the correct label you think the object in the image should be classified as.
+3. Right click to tag images as 'correctly classified', 'misclassified' or relabel them. There are actually two process you might follow. You can first filter out all the misclassified images, and then relabel them. Or you can relabel a bunch of images directly. That way you basically skip the step of tagging them as misclassified.
 
-4. Hit `Download New Result` to save the progress you've made so far. It will download a file named `new_data.json` to your local directories. Next time you run this interface, copy and paste `new_data.json` to under the folder `q1`and change the variable `json_path` of `index.js` to `new_data.json`. This will initialize the graph based on `new_data.json`, i.e. you start from the saved break point.
+4. When you hit `relabel` when right clicking, a window with a dropdown pops up and you need to click the drop down to select the new label for all the images you just selected. The relabeled images immediately disappears from the bottom images
+
+5. When you tag a bottom images as 'correctly classified', its border turns green and so does the border of the related dot in the beeswarm chart. If it is tagged as 'misclassified', both the border of the image and the border of the corresponding scatter turn red.
+
+6. When you hover on a bottom image, another image with exactly the same content of the hovered one is shown above. In this new image a boundingbox given by the classifier, is visualized.
+
+## Some illustrations
+
+1. ![alt text](illustration/1.png)
