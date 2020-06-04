@@ -1,9 +1,9 @@
-var json_path = 'q1.json';
+var json_path = 'new_data.json';
 
 //Defining the margin conventions
 var margin = {top: 50, right: 30, bottom: 50, left: 100},
-      width = 6000 - margin.left - margin.right,
-      height = 1000 - margin.top - margin.bottom;
+    width = 6000 - margin.left - margin.right,
+    height = 1000 - margin.top - margin.bottom;
 
 var y = function(d) { return d.Score; };
 
@@ -13,8 +13,8 @@ var yValue = function(d) { return yScale(y(d)); };
 
 //Y scale
 var yScale = d3.scale.linear()
-               .domain([0, 1])
-               .range([height, 0]);
+               .domain([0.25002, 1])
+               .range([height*0.9, 0]);
 
 //Y axis    
 var yAxis = d3.svg.axis()
@@ -52,15 +52,19 @@ var svg = d3.select("#bloc2")
 //             .attr("transform", "translate(" + margin.left + ",0)");
 
 // Define the div for the img_tooltip
+var img = document.createElement('img'); 
+
 var image_div = d3.select("#image_div") 
                   .attr("class", "tooltip")       
                   .style("opacity", 0);
 
-var img = new Image();
 var c = document.getElementById("my_canvas");
 var ctx = c.getContext("2d");
 
-var example_image_gallery = d3.select("my_exmaple_images")
+document.onclick = function(){
+  ctx.clearRect(0,0,200,160)
+}
+var example_image_gallery = d3.select("my_example_images")
 
 //Global variables 
 var x = function(d) { return d.Label; };
@@ -124,7 +128,7 @@ function correct_data_only(){
     //Draw bubbles
     svg.selectAll("g.node")
        .select("circle")
-       .attr("opacity",function(d){return (d.Status == "Correct")? 1.0: 0.0;})
+       .attr("opacity",function(d){ return (d.Status == "Correct")? 1.0: 0;})
 
   }else{
     is_correct_data_only = false;
@@ -199,11 +203,21 @@ function read_all_data(){
 
     if (error) throw error;
 
-    data.forEach(function(d){
+    // var min = 1.0;
+    // data.forEach(function(d){
+    //   if (d.Score < min && d.Score > 1e-6){
+    //     min = d.Score;
+    //   }
+    // })
+    // console.log(min)
+
+    data.forEach(function(d,i){
+      d.id = i;
       new_data.push({"FileName":d.FileName, "Label":d.Label,
-                     "left":d.left, "top":d.right, 
+                     "left":d.left, "top":d.top, 
                      "Width":d.Width,"Height":d.Height,
-                     "Status":d.Status,"Score":d.Score});
+                     "Status":d.Status,"Score":d.Score,
+                     "Id":d.id});
     })
 
     // console.log(data)
@@ -227,7 +241,7 @@ function read_all_data(){
        .attr("class", "bubbles")
        .selectAll(".node")
        .append("circle")
-       .attr("class", function(d){return d.Id+"_"+d.Label;})
+       .attr("class", function(d){return "c"+d.id;})
        .attr("r", function(d) { return d.r0; })
        .attr("fill", function(d) { return colorScale(d.Label)})
        .style("stroke-width", 2.0)
@@ -254,6 +268,10 @@ function read_all_data(){
       trainingset.push({"img":"MC2-Image-Data/TrainingImages/"+label+"/"+label+"_1.jpg", "label": label});
     })
 
+    trainingset.forEach(function(d){
+      d.isSelected = false;
+    })
+
     var exmaple_images = svg.select(".x-axis").selectAll(".tick")
                    .data(trainingset)
                    .append("svg:image")
@@ -264,7 +282,6 @@ function read_all_data(){
                    .attr("y", 10)
 
     var image_borders = svg.select(".x-axis").selectAll(".tick")
-                   // .append('svg')
                    .append('rect')
                    .attr('transform',"translate(-50,15)")
                    .attr('class', 'image-border')
@@ -272,22 +289,23 @@ function read_all_data(){
                    .attr('height', 70);
 
     image_borders.on('click', function(d){
-                d3.select(this)
+                if (!d.isSelected){
+                  d.isSelected = !d.isSelected;
+                  d3.select(this)
                   .style('stroke',"gold")
                   .style('stroke-width',"10");
-
-                show_gallery(d.label);
-                // show all images
-                })
-                .on('dblclick',function(){
+                  show_gallery(d.label);
+                }
+                else{
+                  d.isSelected = !d.isSelected;
                   d3.select(this)
                     .style('stroke','transparent');
 
-                remove_gallery();
+                  remove_gallery();
+                }
                 })
 
     function show_gallery(label){
-      // svg2.selectAll("g").remove();
 
       var selected_subset = data.filter(function(d){return d.Label == label});
       var num_col = 60;
@@ -295,101 +313,176 @@ function read_all_data(){
       selected_subset.sort((a,b)=> b.Score - a.Score);
 
       //Container for gallery
-      var svg2 = d3.select("#my_exmaple_images")
-                  .attr("class","mainchart")
-                  .append("svg")
-                  .attr("transform", "translate(" + margin.left + ",0)")
-                  .attr("width", num_col * 110)
-                  .attr("height", num_row * 90)
-                  .append("g")
-                  // .attr("transform", "translate(" + margin.left + ",0)");
+      var bottom_div = d3.select("#my_example_images")
+                             .style("overflow","scroll")
+                             .style("height","400px")
 
-      svg2 = svg2.selectAll("g")
-                 .data(selected_subset).enter()
-                 .append("g")
+      selected_subset.forEach(function(d){
+        d.isSelected = false;})
 
-      var subset_images = svg2.append("svg:image")
-                              .attr("xlink:href", function (d) { return d.FileName ; })
-                              .attr("width", 100)
-                              .attr("height", 80)
-                              .attr("x", function(d,i){return (i % num_col)*110;})
-                              .attr("y", function(d,i){return math.floor(i/ num_col)*90;})
-
+      var selected_items = []
 
       var menu3 =  [
         {
           title: 'correctly classified',
-          action: function(d, i) {
-            d3.selectAll("rect."+ d.Id+"_"+d.Label)
-              .style("stroke","green")
-              .style("stroke-width",10)
-              
-            d.Status = "Correct";
-            d3.selectAll("circle." + d.Id+"_"+d.Label)
-              .style("stroke","green")
-              .style("stroke-width", 2 + 4 * d.Score);
+          action: function() {
+            for (var j = 0; j < selected_items.length; j++) {
+              item = selected_subset[selected_items[j]]
+              item_id = item.id;
+
+              d3.select("circle."+ "c" + item_id)
+                .attr("r",function(d){
+                  d.Status = "Correct";
+                  return d.r0;})
+                .style("stroke","green")
+                .style("stroke-width",2 + 4 * item.Score)                
+                .attr("opacity",1)
+
+              d3.select("img.img_" + item_id)
+                .style('border',"10px solid green")
+
+              new_data[item_id].Status = "Correct";
+            }
+            selected_items.splice(0,selected_items.length)
           },
-          disabled: false // optional, defaults to false
         },
         {
           title: 'misclassified',
-          action: function(d, i) {
-            d3.selectAll("rect."+ d.Id+"_"+d.Label)
-              .style("stroke","red")
-              .style("stroke-width",10)
+          action: function() {
+            for (var j = 0; j < selected_items.length; j++) {
+              item = selected_subset[selected_items[j]]
+              item_id = item.id;
 
-            d.Status = "Incorrect";
-            new_data[i].Status = "Incorrect";
-            d3.selectAll("circle." + d.Id+"_"+d.Label)
-              .style("stroke","red")
-              .style("stroke-width", 2 + 4 * d.Score);
+              d3.select("circle."+ "c" + item_id)
+                .attr("r",function(d){
+                  d.Status = "Incorrect";
+                  return d.r0;})
+                .style("stroke","red")
+                .style("stroke-width",2 + 4 * item.Score)
+                .attr("opacity",1)
+
+
+              d3.select("img.img_" + item_id)
+                .style('border',"10px solid red")
+
+              new_data[item_id].Status = "Incorrect";
+            }
+            selected_items.splice(0,selected_items.length)
+          }
+        },
+        {
+          title: 'relabel',
+          action: function() {
+            var dropdown = document.getElementById('dropdownSelection');
+            dropdown.onchange = function(){
+
+              var e = document.getElementById("selectLabel");
+              var text = e.options[e.selectedIndex].text; 
+              selected_label = text;
+
+              for (var j = 0; j < selected_items.length; j++) {
+                item = selected_subset[selected_items[j]]
+                item_id = item.id;
+
+                d3.select("img.img_" + item_id)
+                  .remove()
+
+                new_data[item_id].Label = selected_label;
+                new_data[item_id].Status = "Correct";
+                new_data[item_id].Score = 0.95;
+                console.log(new_data[item_id])
+              }
+              selected_items.splice(0,selected_items.length)
+            }
+            var modal = document.getElementById('relabelBtn');
+            modal.click();
           }
         }
       ]
-      var subset_borders = svg2.append('rect')
-                              .attr('class', function(d){return d.Id+"_"+d.Label})
-                              .attr('width', 100)
-                              .attr('height', 70)
-                              .attr("x", function(d,i){return (i % num_col)*110;})
-                              .attr("y", function(d,i){return math.floor(i/ num_col)*90;})
-                              .attr("fill","transparent")
-                              .on('click', function(d){
-                                // console.log(d3.selectAll("circle." + d.Id+"_"+d.Label))
-                                d3.selectAll("circle." + d.Id+"_"+d.Label)
-                                  .attr("r",15)
-                                  .attr("opacity",0.6);
+      
+      bottom_div.selectAll('div')
+                .data(selected_subset).enter()
+                .append('img')
+                .attr('src',function(d){return d.FileName})
+                .attr('width',100)
+                .attr('height', 80)
+                .attr('class',function(d){return 'img_'+d.id;})
+                .on('click',function(d,i){
+                  if(!d.isSelected){
+                    d.isSelected = !d.isSelected;
+                    d3.select(this)
+                      .style('border',"10px solid gold")
 
-                                d3.selectAll("rect." + d.Id+"_"+d.Label)
-                                  .style("stroke","gold")
-                                  .style("stroke-width",10)
-                              })
-                              .on('dblclick',function(d){
-                                d3.selectAll("rect." + d.Id+"_"+d.Label)
-                                  .style("stroke","transparent");
+                    d3.select("circle." + "c"+d.id)
+                      .style("stroke","gold")
+                      .style("stroke-width", 5)
+                      .attr("r", 15)
+                      .attr("opacity",0.6);
 
-                                d3.selectAll("circle." + d.Id+"_"+d.Label)
-                                  .attr("r",function(d){return d.r0})
-                                  .attr("opacity",1.0)})
-                              .on('contextmenu', d3.contextMenu(menu3, {
-                                onOpen: function() {},
-                                onClose: function() {},
-                                position: function(d, i) {
-                                  var elm = this;
-                                  var bounds = elm.getBoundingClientRect();
-                                  console.log(bounds)
-                                  // eg. align bottom-left
-                                  return {
-                                    top: 50 + bounds.top + bounds.height,
-                                    left: bounds.left
-                                  }
-                                }
-                              }))
+                    selected_items.push(i);
+                    console.log(selected_items)
+                  }
+                  else{
+                    d.isSelected = !d.isSelected;
+                    d3.select(this)
+                    .style('border',"10px solid transparent")
+
+                    d3.select("circle." + "c"+d.id)
+                      .style("stroke",function(d){
+                        if (d.Status == "Incorrect"){ return "red";}
+                        else if (d.Status == "Correct"){ return "green";}
+                        return "transparent";})
+                      .attr("r", function(d){return d.r0;})
+                      .attr("opacity",1.0);
+
+                    var index = selected_items.indexOf(i);
+                    selected_items.splice(index,1);
+                    console.log(selected_items)
+                  }
+                })
+                .on('mouseover',function(d){
+                  var circle = d3.select("circle."+ "c" + d.id);
+                  var bound = d3.select(circle.node().parentNode).node().getBoundingClientRect();
+                  image_div.style("opacity", .85)
+                           .style("left", (bound.left ) + "px")
+                           .style("top", (bound.top) + "px")
+                  //          .style("left", (d3.event.pageX) + "px")     
+                  //          .style("top", (d3.event.pageY) + "px"); 
+
+                  img.src = d.FileName;
+                  img.onload = function() {
+                    var x_ratio = math.ceil(img.width/w);
+                    var y_ratio = math.ceil(img.height/h);
+
+                    ctx.drawImage(img, 0, 0, w, h);
+                    var box_left = math.ceil(+d.left/x_ratio);
+                    var box_top = math.ceil(+d.top/y_ratio);
+                    var box_width = math.ceil(+d.Width/x_ratio);
+                    var box_height = math.ceil(+d.Height/y_ratio);
+                    // ctx.beginPath();
+                    ctx.strokeStyle = "red";
+                    ctx.lineWidth = 5;
+                    ctx.strokeRect(box_left,box_top,box_width,box_height);
+                  }
+                  })
+                .on('contextmenu',d3.contextMenu(menu3, {
+                  onOpen: function() {},
+                  onClose: function() {},
+                  position: function() {
+                    var elm = this;
+                    var bounds = elm.getBoundingClientRect();
+                    return {
+                      top: bounds.top + bounds.height,
+                      left: bounds.left
+                    }
+                  }
+                }))
 
     }
 
     function remove_gallery(){
-       var svg2 = d3.select("#my_exmaple_images")
-       svg2.selectAll("svg").remove();
+       var svg2 = d3.select("#my_example_images")
+       svg2.selectAll("img").remove();
     }
 
   

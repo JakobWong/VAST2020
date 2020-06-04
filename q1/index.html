@@ -20,7 +20,7 @@
     <div id="bloc1"></div>
     <div id="bloc2"></div>
   </div>
-  <div id="my_exmaple_images"></div>
+  <div id="my_example_images"></div>
 </div>
 
 <!-- Div for displaying image -->
@@ -35,7 +35,7 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Choose a Label</h3>
   </div>
-    <div class="modal-body" onchange="SetLabel()">
+    <div id="dropdownSelection" class="modal-body">
       <select id="selectLabel">
         <option value="birdCall">birdCall</option>
         <option value="blueSunglasses">blueSunglasses</option>
@@ -84,6 +84,7 @@
 
         <option value="stickerBox">stickerBox</option>
         <option value="trophy">trophy</option>
+        <option value="turtle">turtle</option>
         <option value="vancouverCards">vancouverCards</option>
         <option value="voiceRecorder">voiceRecorder</option>
 
@@ -225,6 +226,10 @@ div.mainchart{
   overflow-x: auto;
 }
 
+div.mainchart{
+  overflow-y: auto;
+}
+
 #my_chart {
   display: flex;
   
@@ -239,6 +244,20 @@ div.mainchart{
   fill: transparent;
   stroke: transparent;
   shape-rendering: crispEdges;
+}
+
+/*img:hover {
+  box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}*/
+
+img {
+  /*display: flex;*/
+  border: 10px solid transparent;
+  max-width:230px;
+  max-height:95px;
+  width: auto;
+  height: auto;
+  /*padding: 10px;*/
 }
 
 /*.svg-container {

@@ -43,32 +43,14 @@ menu2 = [
     }
   ]
 
-menu3 = [
-    {
-      title: 'correctly classified',
-      action: function(d, i) {
-        console.log(d)
-        // d.Status = "Correct";
-      },
-      disabled: false // optional, defaults to false
-    },
-    {
-      title: 'misclassified',
-      action: function(d, i) {
-
-        // d.Status = "Incorrect";
-        // new_data[i].Status = "Incorrect";
-      }
-    }
-  ]
+var selected_label;
 
 function SetLabel(){
 
   var e = document.getElementById("selectLabel");
-  // var value = e.options[e.selectedIndex].value;
   var text = e.options[e.selectedIndex].text;
-  new_data[nodeIndex].Label = text;
-  new_data[nodeIndex].Status = "Correct";
+  selected_label = text;
+  console.log(selected_label);
   return text;
 }
 
