@@ -29,4 +29,8 @@ Apparently the machine-leanring-based classifier is very very poor at detecting 
 
 ## Some illustrations
 
-1. ![alt text](illustration/1.png)
+1. ![initial view](illustration/1.png)
+2. ![canadaPencil selected](illustration/2.png)
+3. ![Select a bunch of images and tag them as correctly classified](illustration/3.png)
+4. ![their borders turn green](illustration/4.png)
+4. ![Select a bunch of images and tag them as misclassified. Their borders turn red](illustration/5.png)
