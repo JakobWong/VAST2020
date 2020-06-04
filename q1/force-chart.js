@@ -56,12 +56,14 @@ d3.forceChart = function() {
           onOpen: function() {},
           onClose: function() {},
           position: function(d, i) {
+            console.log(this)
             var elm = this;
-            // var bounds = getElementAbsolutePos(this);
-            // eg. align bottom-left
+            var bounds = elm.getBoundingClientRect();
+            var bodyRect = document.body.getBoundingClientRect();
             return {
-              top: d.y + margin.top,
-              left: d.x + margin.left
+              top: bounds.top - bodyRect.top,
+              left: bounds.left - bodyRect.left
+              // - document.getElementById("bloc2").scrollLeft
             }
           }
         })) 

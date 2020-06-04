@@ -193,9 +193,11 @@ function incorrect_data_only(){
             var elm = this;
             var bounds = elm.getBoundingClientRect();
             var bodyRect = document.body.getBoundingClientRect();
+            console.log(bounds)
             return {
-              top: bounds.top - bodyRect.top,
-              left: bounds.left - bodyRect.left
+              top: bounds.top,
+              left: bounds.left + document.getElementById("bloc2").scrollLeft
+              // left: d.x - document.getElementById("bloc2").scrollLeft
             }
           }
         }))
