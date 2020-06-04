@@ -165,9 +165,12 @@ function incorrect_data_only(){
           onOpen: function() {},
           onClose: function() {},
           position: function(d, i) {
+            var elm = this;
+            var bounds = elm.getBoundingClientRect();
+            var bodyRect = document.body.getBoundingClientRect();
             return {
-              top: d.y + margin.top,
-              left: d.x + margin.left
+              top: bounds.top - bodyRect.top,
+              left: bounds.left - bodyRect.left
             }
           }
         }))
@@ -187,9 +190,12 @@ function incorrect_data_only(){
           onOpen: function() {},
           onClose: function() {},
           position: function(d, i) {
+            var elm = this;
+            var bounds = elm.getBoundingClientRect();
+            var bodyRect = document.body.getBoundingClientRect();
             return {
-              top: d.y + margin.top,
-              left: d.x + margin.left
+              top: bounds.top - bodyRect.top,
+              left: bounds.left - bodyRect.left
             }
           }
         }))
@@ -471,9 +477,11 @@ function read_all_data(){
                   position: function() {
                     var elm = this;
                     var bounds = elm.getBoundingClientRect();
+                    var bodyRect = document.body.getBoundingClientRect();
+                    console.log(bounds)
                     return {
-                      top: bounds.top + bounds.height,
-                      left: bounds.left
+                      top: bounds.top - bodyRect.top,
+                      left: bounds.left - bodyRect.left
                     }
                   }
                 }))
