@@ -49,6 +49,7 @@ d3.forceChart = function() {
     var gNodes = selection.selectAll(".node").data(nodes)
       .enter().append("g")
         .attr("class", "node")
+        // .attr("id",function(d){return "n"+d.id})
         .on("click", function(d){
           show_related_image(d);
         })

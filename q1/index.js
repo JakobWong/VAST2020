@@ -249,7 +249,7 @@ function read_all_data(){
        .attr("class", "bubbles")
        .selectAll(".node")
        .append("circle")
-       .attr("class", function(d){return "c"+d.id;})
+       .attr("id", function(d){return "c"+d.id;})
        .attr("r", function(d) { return d.r0; })
        .attr("fill", function(d) { return colorScale(d.Label)})
        .style("stroke-width", 2.0)
@@ -272,8 +272,10 @@ function read_all_data(){
                         "pinkCandle", "vancouverCards", "hairRoller"]
 
     var trainingset = [];
+    var number_of_new_points = [];
     labels.forEach(function(label){
       trainingset.push({"img":"MC2-Image-Data/TrainingImages/"+label+"/"+label+"_1.jpg", "label": label});
+      number_of_new_points[label] = 0;
     })
 
     trainingset.forEach(function(d){
@@ -338,7 +340,7 @@ function read_all_data(){
               item = selected_subset[selected_items[j]]
               item_id = item.id;
 
-              d3.select("circle."+ "c" + item_id)
+              d3.select("#c" + item_id)
                 .attr("r",function(d){
                   d.Status = "Correct";
                   return d.r0;})
@@ -361,7 +363,7 @@ function read_all_data(){
               item = selected_subset[selected_items[j]]
               item_id = item.id;
 
-              d3.select("circle."+ "c" + item_id)
+              d3.select("#c" + item_id)
                 .attr("r",function(d){
                   d.Status = "Incorrect";
                   return d.r0;})
@@ -370,7 +372,7 @@ function read_all_data(){
                 .attr("opacity",1)
 
 
-              d3.select("img.img_" + item_id)
+              d3.select("#img_" + item_id)
                 .style('border',"10px solid red")
 
               new_data[item_id].Status = "Incorrect";
@@ -392,14 +394,38 @@ function read_all_data(){
                 item = selected_subset[selected_items[j]]
                 item_id = item.id;
 
-                d3.select("img.img_" + item_id)
-                  .remove()
-
                 new_data[item_id].Label = selected_label;
                 new_data[item_id].Status = "Correct";
                 new_data[item_id].Score = 0.95;
-                console.log(new_data[item_id])
+
+                data[item_id].Label = selected_label;
+                data[item_id].Status = "Correct";
+                data[item_id].Score = 0.95;
+
+
+                d3.select("#img_" + item_id)
+                  .remove()
+
+                new_x = xScale(selected_label) + xScale.rangeBand()/2 + number_of_new_points[selected_label] * 10;
+                new_y = yScale(0.95) + (number_of_new_points[selected_label] / 6)* 10;                 
+                number_of_new_points[selected_label] += 1;  
+
+                console.log(new_x, new_y)
+
+
+                circle = d3.select("#c" + item_id)
+                d3.select(circle.node().parentNode)
+                             .attr("transform","translate(" + new_x + "," + new_y +")")
+
+                circle.attr("r", 5.0)
+                      .attr("fill", function(d) { return colorScale(data[item_id].Label)})
+                      .style("stroke-width", 2.0)
+                      .style("stroke", "green")
+                      .attr("opacity",1.0)
+
+                console.log(d3.select(d3.select("#c" + item_id).node().parentNode))
               }
+
               selected_items.splice(0,selected_items.length)
             }
             var modal = document.getElementById('relabelBtn');
@@ -414,14 +440,24 @@ function read_all_data(){
                 .attr('src',function(d){return d.FileName})
                 .attr('width',100)
                 .attr('height', 80)
-                .attr('class',function(d){return 'img_'+d.id;})
+                .attr('id',function(d){return 'img_'+d.id;})
+                .style('border',function(d){
+                  if (d.Status == "Incorrect"){
+                    return "10px solid red"
+                  }
+                  else if (d.Status == "Correct"){
+                    return "10px solid green"
+                  }
+                  return "10px solid transparent"
+                })
                 .on('click',function(d,i){
-                  if(!d.isSelected){
+                  if (d.Status == "unprocessed"){
+                    if(!d.isSelected){
                     d.isSelected = !d.isSelected;
                     d3.select(this)
                       .style('border',"10px solid gold")
 
-                    d3.select("circle." + "c"+d.id)
+                    d3.select("#c"+d.id)
                       .style("stroke","gold")
                       .style("stroke-width", 5)
                       .attr("r", 15)
@@ -429,27 +465,28 @@ function read_all_data(){
 
                     selected_items.push(i);
                     console.log(selected_items)
+                    }
+                    else{
+                      d.isSelected = !d.isSelected;
+                      d3.select(this)
+                        .style('border',"10px solid transparent")
+
+                      d3.select("#c"+d.id)
+                        .style("stroke",function(d){
+                          if (d.Status == "Incorrect"){ return "red";}
+                          else if (d.Status == "Correct"){ return "green";}
+                          return "transparent";})
+                        .attr("r", function(d){return d.r0;})
+                        .attr("opacity",1.0);
+
+                      var index = selected_items.indexOf(i);
+                      selected_items.splice(index,1);
+                      console.log(selected_items)
                   }
-                  else{
-                    d.isSelected = !d.isSelected;
-                    d3.select(this)
-                    .style('border',"10px solid transparent")
-
-                    d3.select("circle." + "c"+d.id)
-                      .style("stroke",function(d){
-                        if (d.Status == "Incorrect"){ return "red";}
-                        else if (d.Status == "Correct"){ return "green";}
-                        return "transparent";})
-                      .attr("r", function(d){return d.r0;})
-                      .attr("opacity",1.0);
-
-                    var index = selected_items.indexOf(i);
-                    selected_items.splice(index,1);
-                    console.log(selected_items)
                   }
                 })
                 .on('mouseover',function(d){
-                  var circle = d3.select("circle."+ "c" + d.id);
+                  var circle = d3.select("#c" + d.id);
                   var bound = d3.select(circle.node().parentNode).node().getBoundingClientRect();
                   image_div.style("opacity", .85)
                            .style("left", (bound.left ) + "px")
