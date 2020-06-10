@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Google fonts Second Reference-->  
+<link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500&display=swap" rel="stylesheet">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.0/css/bootstrap.min.css">
+
+<!-- Connecting with D3 library-->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<!-- Create the charting area as a div with a sepecifi id -->  
+<div id="my_dataviz">
+  <div id="bar_chart">
+    <div id="bloc1"></div>
+    <div id="bloc2"></div>
+  </div>
+  <div id="scattor_plot"></div>
+  <div id="ontology_graph"></div>
+</div>
+
+<style>
+
+/*Defining text stylings*/ 
+  
+#h1 {
+  font-size: 50px;
+  margin: 0px 0px 2px 0px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 100;
+  font-variant: small-caps slashed-zero;
+  color: #f206d3;
+  }
+  
+#h2 {
+  font-size: 20px;
+  margin: 0px 0px 0px 0px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 200;
+  font-variant: small-caps slashed-zero;
+  color: #478adb;
+  }
+  
+#link {
+  font-family: 'Barlow', sans-serif;
+  font-size: 6px;
+  font-variant: small-caps slashed-zero;
+  margin: 8px 10px 2px 4px;
+  color: #778287;
+}
+ 
+a:link, a:visited, a:active {
+  text-decoration: none;
+  color: #778287;
+  border-bottom: 0.6px dotted #D1D5D7;
+}
+  
+body {
+  font-family: 'Barlow', sans-serif;
+  background-color:white;
+}
+          
+/*Defining axis stylings*/
+
+.x-axis text,  .y-axis text {
+        font-family: 'Barlow', sans-serif;
+        font-weight: 100;
+        font-size:10px;
+        opacity:0.8;
+        fill: #778287;
+      }
+
+.y-axis path, .x-axis path {
+        fill: none;
+        stroke-width: 0;
+        stroke-opacity:1;
+        stroke: #778287;
+      }
+
+.x-axis line, .y-axis line {
+        fill: none;
+        stroke-width: 0;
+        stroke-opacity:1;
+        stroke: #778287;
+      }
+  
+/*Defining chart stylings*/
+    
+.legend {
+        font-family: 'Barlow', sans-serif;
+        font-weight: 100;
+        font-size:10px;
+        opacity:0.8;
+        fill: #778287;
+      }
+ 
+.legend {
+        font-family: 'Barlow', sans-serif;
+        font-weight: 100;
+        font-size:14px;
+        opacity:0.8;
+        fill: #778287;
+      }
+
+.legend circle {
+        fill: none;
+        stroke-width: 3;
+        stroke-opacity:1;
+        stroke: #778287;
+      }
+
+div.tooltip { 
+    position: absolute;     
+    text-align: center;     
+}
+
+.d3-context-menu {
+  position: absolute;
+  display: none;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  min-width: 150px;
+  border: 1px solid #d4d4d4;
+
+  z-index:1200;
+}
+
+.d3-context-menu ul {
+  list-style-type: none;
+  margin: 4px 0px;
+  padding: 0px;
+  cursor: default;
+}
+
+.d3-context-menu ul li {
+  padding: 4px 16px;
+}
+
+.d3-context-menu ul li:hover {
+  background-color: #4677f8;
+  color: #fefefe;
+}
+
+div.mainchart{
+  overflow-x: auto;
+}
+
+#bar_chart {
+  display: flex;
+  
+}
+
+#my_dataviz {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-border {
+  fill: transparent;
+  stroke: transparent;
+  shape-rendering: crispEdges;
+}
+
+img {
+  /*display: flex;*/
+  border: 10px solid transparent;
+  max-width:230px;
+  max-height:95px;
+  width: auto;
+  height: auto;
+  /*padding: 10px;*/
+}
+
+.link {
+        stroke: #ccc;
+}
+
+.node text {
+    pointer-events: none;
+    font: 10px sans-serif;
+}
+
+@font-face {
+    font-family: 'overwatch';
+    src: url('fonts/koverwatch.woff2');
+}
+
+div.tooltip { 
+    position: absolute;     
+    text-align: center;     
+    width: 100px;          
+    height: 45px;         
+    padding: 2px;       
+    font: 12px sans-serif;    
+    background: lightsteelblue; 
+    border: 0px;    
+    border-radius: 8px;     
+    pointer-events: none;     
+}
+
+  
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.0.0/math.js"></script>
+<script src="chart1.js"></script>
+<script src="chart2.js"></script>
+<script src="chart3.js"></script>
+<!-- Optional JavaScript -->
