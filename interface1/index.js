@@ -225,7 +225,7 @@ function read_all_data(){
                      "left":d.left, "top":d.top, 
                      "Width":d.Width,"Height":d.Height,
                      "Status":d.Status,"Score":d.Score,
-                     "Id":d.id});
+                     "Id":d.id, "Person":d.Person, "Pic": d.Pic});
     })
 
     // console.log(data)
@@ -348,7 +348,7 @@ function read_all_data(){
                 .style("stroke-width",2 + 4 * item.Score)                
                 .attr("opacity",1)
 
-              d3.select("img.img_" + item_id)
+              d3.select("#img_" + item_id)
                 .style('border',"10px solid green")
 
               new_data[item_id].Status = "Correct";
@@ -428,7 +428,7 @@ function read_all_data(){
 
               selected_items.splice(0,selected_items.length)
             }
-            var modal = document.getElementById('relabelBtn');
+            var modal = document.getElementById('labelBtn');
             modal.click();
           }
         }

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Google fonts Second Reference-->  
+<link href="https://fonts.googleapis.com/css?family=Barlow:100,200,300,400,500&display=swap" rel="stylesheet">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.0/css/bootstrap.min.css">
+
+<!-- Connecting with D3 library-->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<!-- Create the charting area as a div with a sepecifi id -->  
+<div id="my_dataviz">
+
+  <div style="display:flex;">
+    <h4>Exmaple Images</h4>
+    <button id="ResultSaver" onclick="SaveResult()">Download New Result</button>
+  </div>
+  <div id="example_images"></div>
+  <div id="person_div">
+    <div id="person_div_image_section">
+      <div id="person_selection"></div>
+      <div id="person_images"></div>
+    </div>
+    <div id="person_div_label_section">
+      <div id="labelview"></div>
+      <div id="word_cloud"></div>
+    </div>
+  </div>
+
+  <a id="myBtn" data-target="#myModal" role="button" class="btn" data-toggle="modal" style="display:none;">Add Label</a>
+<div class="modal" id="myModal" role="dialog" aria-labelledby="myModalLabel" style="display:none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Choose a Label</h3>
+  </div>
+    <div id="dropdownSelection" class="modal-body">
+      <select id="selectLabel">
+        <option value="birdCall">birdCall</option>
+        <option value="blueSunglasses">blueSunglasses</option>
+        <option value="brownDie">brownDie</option>
+        <option value="cactusPaper">cactusPaper</option>
+
+        <option value="canadaPencil">canadaPencil</option>
+        <option value="carabiner">carabiner</option>
+        <option value="cloudSign">cloudSign</option>
+        <option value="cowbell">cowbell</option>
+
+        <option value="cupcakePaper">cupcakePaper</option>
+        <option value="eyeball">eyeball</option>
+        <option value="foamDart">foamDart</option>
+        <option value="gClamp">gClamp</option>
+
+        <option value="giftBag">giftBag</option>
+        <option value="glassBead">glassBead</option>
+        <option value="gyroscope">gyroscope</option>
+        <option value="hairClip">hairClip</option>
+
+        <option value="hairRoller">hairRoller</option>
+        <option value="lavenderDie">lavenderDie</option>
+        <option value="legoBracelet">legoBracelet</option>
+        <option value="metalKey">metalKey</option>
+
+        <option value="miniCards">miniCards</option>
+        <option value="noisemaker">noisemaker</option>
+        <option value="paperPlate">paperPlate</option>
+        <option value="partyFavor">partyFavor</option>
+
+        <option value="pinkCandle">pinkCandle</option>
+        <option value="pinkEraser">pinkEraser</option>
+        <option value="plaidPencil">plaidPencil</option>
+        <option value="pumpkinNotes">pumpkinNotes</option>
+
+        <option value="rainbowPens">rainbowPens</option>
+        <option value="redBow">redBow</option>
+        <option value="redDart">redDart</option>
+        <option value="redWhistle">redWhistle</option>
+
+        <option value="rubiksCube">rubiksCube</option>
+        <option value="sign">sign</option>
+        <option value="silverStraw">silverStraw</option>
+        <option value="spiderRing">spiderRing</option>
+
+        <option value="stickerBox">stickerBox</option>
+        <option value="trophy">trophy</option>
+        <option value="turtle">turtle</option>
+        <option value="vancouverCards">vancouverCards</option>
+        <option value="voiceRecorder">voiceRecorder</option>
+
+        <option value="yellowBag">yellowBag</option>
+        <option value="yellowBalloon">yellowBalloon</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button id="closeBtn" class="btn" data-dismiss="modal" aria-hidden="true" onclick="SetLabel()">Close</button>
+    </div>
+</div>
+</div>
+
+<style>
+
+#person_div {
+  display: flex; 
+}
+
+#my_dataviz {
+  display: flex;
+  flex-direction: column;
+}
+
+#person_div_image_section {
+  display: flex;
+  flex-direction: column;
+}
+
+#exmaple_images{
+  overflow-x: scroll;
+}
+
+#person_div_label_section{
+  display: flex;
+  flex-direction: column;
+}
+
+img {
+  /*display: flex;*/
+  border: 10px solid transparent;
+  max-width:230px;
+  max-height:95px;
+  width: auto;
+  height: auto;
+  /*padding: 10px;*/
+}
+
+.d3-context-menu {
+  position: absolute;
+  display: none;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  min-width: 150px;
+  border: 1px solid #d4d4d4;
+
+  z-index:1200;
+}
+
+.d3-context-menu ul {
+  list-style-type: none;
+  margin: 4px 0px;
+  padding: 0px;
+  cursor: default;
+}
+
+.d3-context-menu ul li {
+  padding: 4px 16px;
+}
+
+.d3-context-menu ul li:hover {
+  background-color: #4677f8;
+  color: #fefefe;
+}
+
+
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.0.0/math.js"></script>
+<script src="d3-context-menu.js"></script>
+<script src="person_image_list.js"></script>
+<script src="result_saver.js"></script>
+<script src="exmaple_images.js"></script>
+<script src="person_images.js"></script>
+<!-- Optional JavaScript -->
