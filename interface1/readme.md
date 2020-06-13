@@ -21,16 +21,26 @@ When using interface 1, we basically want to check the classfication results. Le
 
 3. Select all the images you think containing the object and hit the button `label selected as correct and unselected as incorrect`
 
+## Very Important Information
+
+The verification process could be tiring. So anytime you don't feel like continuing, just hit the `download new result` button on top. That saves the result you've gotten so far in a file named `new_data.json`. Next time you wanna start from the latest break point just put the saved data in this folder and modify the `json_path` in script `beeswarm_chart.js` as `new_data.json`.
+
 ## An Illustration
 
 Let's take the verification for class `canadaPencil` as an example. We first click the image of `canadaPencil`. Upon the click, the image will be bordered in gold. And we see images appear on the bottom view. Those images are images the classifier says to have `canadaPencil`.
 
-![Test Image 1](illustration/1.png)
+![img1](illustration/1.png)
 
 Now if you hover on one of those image, a magnified view of that image will show on your left with bounding boxes drawn. With the maginifed image you can see clearly if the object inside the bounding box is the target object or not. The one shown as follows is a misclassified class as the object in the bounding box is `rainbowPencil` instead of `canadaPencil`.
 
+![img2](illustration/2.png)
+
 We move on to select all images that do have a `canadaPencil` within. To see all the images you might need to scroll down as they are so many. Whenever an images is selected, it gets a gold border and the corresponding data point in the beeswarm chart gets highlighted.
 
+![img3](illustration/3.png)
+
 Now that we have selected all `correctly classified` cases. We can hit the butoon `Label Selected as Correct and Unselected as Incorrect` to mark samples as `correct` or `incorrect`.
+
+![img4](illustration/4.png)
 
 That's what we have after hitting the button. Looks like the classfier does pretty poorly on recognizing `canadaPencil`. And that's the entire process of verification for `canadaPencil`. Go on and verify other classes. You got 42 more to get done!
