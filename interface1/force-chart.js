@@ -41,59 +41,10 @@ d3.forceChart = function() {
       });
       
 
-    h = 160;
-    w = 200;
-    ctx.canvas.width = w;
-    ctx.canvas.height = h;
-
     var gNodes = selection.selectAll(".node").data(nodes)
       .enter().append("g")
         .attr("class", "node")
         // .attr("id",function(d){return "n"+d.id})
-        .on("click", function(d){
-          show_related_image(d);
-        })
-        .on('contextmenu', d3.contextMenu(menu, {
-          onOpen: function() {},
-          onClose: function() {},
-          position: function(d, i) {
-            console.log(this)
-            var elm = this;
-            var bounds = elm.getBoundingClientRect();
-            var bodyRect = document.body.getBoundingClientRect();
-            return {
-              top: bounds.top - bodyRect.top,
-              left: bounds.left - bodyRect.left
-              // - document.getElementById("bloc2").scrollLeft
-            }
-          }
-        })) 
-
-    function show_related_image(d){
-      ctx.clearRect(0,0,w,h);
-
-      image_div.style("opacity", .85)
-               .style("left", (d.x + 100) + "px")
-               .style("top", (d.y + 80) + "px")
-      //          .style("left", (d3.event.pageX) + "px")     
-      //          .style("top", (d3.event.pageY) + "px"); 
-
-      img.src = d.FileName;
-      img.onload = function() {
-        var x_ratio = math.ceil(img.width/w);
-        var y_ratio = math.ceil(img.height/h);
-
-        ctx.drawImage(img, 0, 0, w, h);
-        var box_left = math.ceil(+d.left/x_ratio);
-        var box_top = math.ceil(+d.top/y_ratio);
-        var box_width = math.ceil(+d.Width/x_ratio);
-        var box_height = math.ceil(+d.Height/y_ratio);
-        // ctx.beginPath();
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 5;
-        ctx.strokeRect(box_left,box_top,box_width,box_height);
-      }
-    }
 
     force
       .size([width, height])

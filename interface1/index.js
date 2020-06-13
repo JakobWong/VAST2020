@@ -22,7 +22,7 @@ var yAxis = d3.svg.axis()
                   .orient("left");    
 
 //Draw y axes
-d3.select("#bloc1")
+d3.select("#yAxis")
   .append("svg")
   .attr("height",height + margin.top + margin.bottom)
   .attr("width",margin.left)
@@ -35,21 +35,12 @@ d3.select("#bloc1")
   .attr("stroke-dasharray", "1, 2");
 
 //Container
-var svg = d3.select("#bloc2")
-            .attr("class","mainchart")
+var svg = d3.select("#beeswarm")
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom + 50)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-// //Container for gallery
-// var svg2 = d3.select("#my_exmaple_images")
-//             .append("svg")
-//             .attr("width", 1000)
-//             .attr("height", 1000)
-//             .append("g")
-//             .attr("transform", "translate(" + margin.left + ",0)");
 
 // Define the div for the img_tooltip
 var img = document.createElement('img'); 
@@ -160,21 +151,6 @@ function incorrect_data_only(){
        .select("circle")
        .attr("opacity",function(d){return (d.Status == "Incorrect")? 1.0: 0.0;})
 
-    svg.selectAll("g.node")
-       .on('contextmenu', d3.contextMenu(menu2, {
-          onOpen: function() {},
-          onClose: function() {},
-          position: function(d, i) {
-            var elm = this;
-            var bounds = elm.getBoundingClientRect();
-            var bodyRect = document.body.getBoundingClientRect();
-            return {
-              top: bounds.top - bodyRect.top,
-              left: bounds.left - bodyRect.left
-            }
-          }
-        }))
-
   }else{
     is_incorrect_data_only = false;
     var button = document.getElementById("incorrectDataViewer");
@@ -185,23 +161,6 @@ function incorrect_data_only(){
        .select("circle")
        .attr("opacity",function(d){return 1.0;})
 
-    svg.selectAll("g.node")
-       .on('contextmenu', d3.contextMenu(menu, {
-          onOpen: function() {},
-          onClose: function() {},
-          position: function(d, i) {
-            var elm = this;
-            var bounds = elm.getBoundingClientRect();
-            var bodyRect = document.body.getBoundingClientRect();
-            console.log(bounds)
-            return {
-              top: bounds.top,
-              left: bounds.left + document.getElementById("bloc2").scrollLeft
-              // left: d.x - document.getElementById("bloc2").scrollLeft
-            }
-          }
-        }))
-
   }
 }
 
@@ -210,14 +169,6 @@ function read_all_data(){
   d3.json(json_path, function(error, data) {
 
     if (error) throw error;
-
-    // var min = 1.0;
-    // data.forEach(function(d){
-    //   if (d.Score < min && d.Score > 1e-6){
-    //     min = d.Score;
-    //   }
-    // })
-    // console.log(min)
 
     data.forEach(function(d,i){
       d.id = i;
@@ -510,20 +461,6 @@ function read_all_data(){
                     ctx.strokeRect(box_left,box_top,box_width,box_height);
                   }
                   })
-                .on('contextmenu',d3.contextMenu(menu3, {
-                  onOpen: function() {},
-                  onClose: function() {},
-                  position: function() {
-                    var elm = this;
-                    var bounds = elm.getBoundingClientRect();
-                    var bodyRect = document.body.getBoundingClientRect();
-                    console.log(bounds)
-                    return {
-                      top: bounds.top - bodyRect.top,
-                      left: bounds.left - bodyRect.left
-                    }
-                  }
-                }))
 
     }
 
