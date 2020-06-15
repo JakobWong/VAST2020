@@ -1,4 +1,4 @@
-var json_path = 'q1.json';
+var json_path = 'new_data.json';
 
 //Defining the margin conventions
 var margin = {top: 50, right: 30, bottom: 50, left: 100},
@@ -116,6 +116,8 @@ d3.json(json_path, function(error, data) {
                    "id":d.id, "Person":d.Person, "Pic": d.Pic});
   })
 
+  console.log(new_data.filter(function(d){return d.Status == "Incorrect"}))
+
   //Draw bubbles
   svg.append("g")
      .call(bubbleChart, new_data)
@@ -128,7 +130,7 @@ d3.json(json_path, function(error, data) {
      .attr("fill", function(d) { return colorScale(d.Label)})
      .style("stroke-width", 2.0)
      .style("stroke", function(d){ 
-      if (d.Status == "Incorrect"){ return "red";}
+      if (d.Status == "Incorrect"){ console.log(d); return "red";}
       else if (d.Status == "Correct"){ return "green";}
       return "transparent";});
 

@@ -20,7 +20,12 @@
   <div id="person_div">
     <div id="person_div_image_section">
       <div id="person_selection"></div>
-      <div id="person_images"></div>
+      <div id="person_image_display">
+        <div id="hover_image_div">
+          <img id="hover_image"></img>
+        </div> 
+        <div id="person_images"></div>
+      </div>
     </div>
     <div id="person_div_label_section">
       <div id="labelview"></div>
@@ -122,6 +127,15 @@
   flex-direction: column;
 }
 
+#person_image_display{
+  display: flex;
+}
+
+#hover_image_div{
+  width: 400px;
+  height: 320px;
+}
+
 img {
   /*display: flex;*/
   border: 10px solid transparent;
@@ -168,8 +182,8 @@ img {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.0.0/math.js"></script>
 <script src="d3.layout.cloud.js"></script>
+<!-- <script src="cloud.js"></script> -->
 <script src="d3-context-menu.js"></script>
-<script src="person_image_list.js"></script>
 <script src="result_saver.js"></script>
 <script src="exmaple_images.js"></script>
 <script src="person_images.js"></script>

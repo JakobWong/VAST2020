@@ -1,80 +1,79 @@
 var wordcloud_div = d3.select("#word_cloud")
-					  .style("width","600px")
-					  .style("height","300px")
+					  .style("width","960px")
+					  .style("height","500px")
+
+var margin = {top: 30, right: 50, bottom: 30, left: 50};
+var width = 960 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+
+var g = wordcloud_div.append("svg")
+			        .attr("width", width)
+			        .attr("height", height)
+			      	.append("g")
+			      	.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+			      	.append("g")
+			        .attr("transform", "translate(" + [width >> 1, height >> 1] + ")")
 
 var updateWordCloud = function(person){
 
-	// clearWordCloud();
+	// d3.select("#word_cloud").selectAll('svg').remove();
 
-	var margin = {top: 30, right: 50, bottom: 30, left: 50};
-	var width = 600 - margin.left - margin.right;
-	var height = 480 - margin.top - margin.bottom;
+	// var margin = {top: 30, right: 50, bottom: 30, left: 50};
+	// var width = 960 - margin.left - margin.right;
+	// var height = 500 - margin.top - margin.bottom;
 
 	// compute word frequency
 	var data_of_the_person = person_image_list.filter(function(d){return d.Person == person;})
-	var frequency_of_label = {};
+	var word_count = {};
 
 	// compute the frequency of each label that appears in data_of_the_person
 	data_of_the_person.forEach(function(d){
-		var label_list = d.Label;
-		for (var i = label_list.length - 1; i >= 0; i--) {
-			var label = label_list[i];
-			if (!frequency_of_label[label]){
-				frequency_of_label[label] = 1;
+		var label_list = d.CorrectLabel;
+		label_list.forEach(function(label){
+			if(word_count[label]){
+				word_count[label] ++;
+			}else{
+				word_count[label] = 1;
 			}
-			else{
-				frequency_of_label[label] += 1;
-			}
-		}
+		})
 	})
 
-	// initalize data with all labels having zero frequency
-	var word_entries = [];
-	for(label in frequency_of_label){
-		word_entries.push({
-			"text":label,
-			"frequency":frequency_of_label[label]
-		})
-	}
+	var word_entries = d3.entries(word_count);
 
 	var wordScale = d3.scaleLinear()
-			    	  .domain([0,d3.max(word_entries, function(d) { return d.frequency; })])
-			    	  .range([50, 200])
+			    	  .domain([0,d3.max(word_entries, function(d) { return d.value; })])
+			    	  .range([5, 100])
 
   	d3.layout.cloud().size([width, height])
           .timeInterval(20)
           .words(word_entries)
-          .fontSize(function(d) { return wordScale(+d.frequency); })
-          .text(function(d) { return d.text; })
+          .fontSize(function(d) { return wordScale(+d.value); })
+          .text(function(d) { return d.key; })
           .rotate(function() { return ~~(Math.random() * 2) * 90; })
           .font("Impact")
           .on("end", draw)
           .start();
+
+    // console.log(word_entries)
 				      
     function draw(words) {
-	    d3.select("#word_cloud").append("svg")
-			        .attr("width", width)
-			        .attr("height", height)
-			      	.append("g")
-			        .attr("transform", "translate(0,0)")
-			      .selectAll("text")
+
+		g.selectAll("text")
 			        .data(words)
 			      .enter().append("text")
-			        .style("font-size", function(d) { console.log(d); return wordScale(d.frequency) + "px"; })
+			      	.transition()
+					.duration(100)
+			        .style("font-size", function(d) {return wordScale(d.value) + "px"; })
 			        .style("font-family", "Impact")
-			        .style("fill", function(d, i) { return colorScale(d.text); })
+			        .style("fill", function(d, i) { return colorScale(d.key); })
 			        .attr("text-anchor", "middle")
 			        .attr("transform", function(d) {
 			          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
 			        })
-			        .text(function(d) { return d.text; });
-   }
+			        .text(function(d) { return d.key; });
+   	}
 
    d3.layout.cloud().stop();
 }
-
-// var clearWordCloud = function(){
-// 	wordcloud_div.selectAll('g').exit().remove();
-// }
 
 
