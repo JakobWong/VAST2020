@@ -16,12 +16,6 @@ var g = wordcloud_div.append("svg")
 
 var updateWordCloud = function(person){
 
-	// d3.select("#word_cloud").selectAll('svg').remove();
-
-	// var margin = {top: 30, right: 50, bottom: 30, left: 50};
-	// var width = 960 - margin.left - margin.right;
-	// var height = 500 - margin.top - margin.bottom;
-
 	// compute word frequency
 	var data_of_the_person = person_image_list.filter(function(d){return d.Person == person;})
 	var word_count = {};
@@ -42,7 +36,7 @@ var updateWordCloud = function(person){
 
 	var wordScale = d3.scaleLinear()
 			    	  .domain([0,d3.max(word_entries, function(d) { return d.value; })])
-			    	  .range([5, 100])
+			    	  .range([5, 50])
 
   	d3.layout.cloud().size([width, height])
           .timeInterval(20)
@@ -54,13 +48,18 @@ var updateWordCloud = function(person){
           .on("end", draw)
           .start();
 
-    // console.log(word_entries)
+    console.log(word_entries)
 				      
     function draw(words) {
 
-		g.selectAll("text")
-			        .data(words)
-			      .enter().append("text")
+    	console.log(words)
+
+		var wordCloud = g.selectAll("text")
+			        .data(words,function(d){return d.key;})
+
+		wordCloud.exit().remove();
+		
+		wordCloud.enter().append("text")
 			      	.transition()
 					.duration(100)
 			        .style("font-size", function(d) {return wordScale(d.value) + "px"; })
@@ -71,6 +70,7 @@ var updateWordCloud = function(person){
 			          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
 			        })
 			        .text(function(d) { return d.key; });
+
    	}
 
    d3.layout.cloud().stop();

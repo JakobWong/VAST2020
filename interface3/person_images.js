@@ -68,226 +68,55 @@ var menu =  [
 
 var person_image_list = []
 
-var json_path = 'new_data.json'
+var json_path = 'i3_new_data.json'
 
-d3.json(json_path, function(error, data) {
-  console.log(data)
+if(json_path != 'i3_new_data.json'){
+  d3.json(json_path, function(error, data) {
+    console.log(data)
 
-  var nested_data = d3.nest()
-            .key(function(d){return d.Person;})
-            .key(function(d){return d.Pic;})
-            .entries(data)
+    var nested_data = d3.nest()
+              .key(function(d){return d.Person;})
+              .key(function(d){return d.Pic;})
+              .entries(data)
 
-  for (var i = 0; i < nested_data.length; i++) {
-    var person_data = nested_data[i]["values"]
-    for (var j = 0; j < person_data.length; j++) {
-      var images = person_data[j]["values"]
+    nested_data.forEach(function(person){
+      person["values"].forEach(function(image){
+        // console.log(image)
+        var person_image = image["values"]
+        var Person = person_image[0].Person
+        var Pic = person_image[0].Pic
+        var FileName = person_image[0].FileName
+        var CorrectLabel = [];
+        var IncorrectLabel = [];
+        for (var i = 0; i < person_image.length; i++) {
+          if (person_image[i].Status == "Correct"){
+            CorrectLabel.push(person_image[i].Label)
+          }
+          else if (person_image[i].Status == "Incorrect"){
+            IncorrectLabel.push(person_image[i].Label)
+          }
 
-      console.log()
-      var Person = images[0].Person
-      var Pic = images[0].Pic
-      var Path = images[0].FileName
-      var CorrectLabel = [];
-      var IncorrectLabel = [];
-      for (var k = 0; k < images.length; k++) {
-        if (images[k].Status == "Correct"){
-          CorrectLabel.push(images[k].Label)
         }
-        else if (images[k].Status == "Incorrect"){
-          IncorrectLabel.push(images[k].Label)
-        }
-      }
-
-      person_image_list.push({
-        "Person":Person,
-        "Pic":Pic,
-        "Path":Path,
-        "CorrectLabel":CorrectLabel,
-        "IncorrectLabel":IncorrectLabel
-      });
-    }
-  }
-
-  person_image_list.forEach(function(d,i){
-    d.id = +i;
+        person_image_list.push({
+          "Person":Person,
+          "Pic":Pic,
+          "FileName":FileName,
+          "CorrectLabel":CorrectLabel,
+          "IncorrectLabel":IncorrectLabel});
+      })
+    })
   })
-  console.log(person_image_list)
+}
+else{
+  d3.json(json_path, function(error, data) {
+    data.forEach(function(d){
+      person_image_list.push(d);
+    })
+  })
+}
 
-  // // Handler for dropdown value change
-  // var dropdownChange = function() {
-  //     var newPerson = d3.select(this).property('value')
-  //     updateImageholder(newPerson);
-  //     updateLabelviewholder(newPerson);
-  // };
-
-  // var updateImageholder = function(person) {
-  //     clearImageholder();
-
-  //     var data = person_image_list.filter(function(d){return d.Person == person;})
-
-  //     data.forEach(function(d){
-  //       d.isSelected = false;
-  //       d.Pic = +d.Pic;
-  //       d.isMagnified = false;
-  //     })
-
-  //     data.sort(function(a,b) { return a.Pic - b.Pic } );
-  //     // console.log(data)
-  //     imageholder.selectAll('div')
-  //           .data(data).enter()
-  //           .append('img')
-  //           .attr('id',function(d){return 'img'+ d.id})
-  //           .attr('src',function(d){return d.Path;})  
-  //           .on('mouseover',function(d,i){
-  //             var target_div = d3.select('#label_' + d.Person + "_" + d.Pic)
-  //                                .selectAll('text')
-  //                                .style('font-weight','bold')
-  //           })
-  //           .on('mouseout',function(d,i){
-  //             var target_div = d3.select('#label_' + d.Person + "_" + d.Pic)
-  //                                .selectAll('text')
-  //                                .style('font-weight','normal')
-  //           })
-  //           .on('click',function(d,i){
-  //               if(!d.isSelected){
-  //                 d.isSelected = !d.isSelected;
-  //                 d3.select(this)
-  //                   .style('border',"10px solid gold");
-  //                 selectedIndices.push(d.id);
-  //               }
-  //               else{
-
-  //                 d.isSelected = !d.isSelected;
-  //                 d3.select(this)
-  //                   .style("width","auto")
-  //                   .style("height","auto")
-  //                   .style('max-width','230px')
-  //                   .style('max-height','95px')
-  //                   .style('border',"10px solid transparent");
-
-  //                 var index = selectedIndices.indexOf(d.id);
-  //                 selectedIndices.splice(index,1);
-  //               }
-  //             })
-  //             .on('contextmenu',d3.contextMenu(menu, {
-  //               onOpen: function() {},
-  //               onClose: function() {},
-  //               position: function() {
-  //                 var elm = this;
-  //                 var bounds = elm.getBoundingClientRect();
-  //                 var bodyRect = document.body.getBoundingClientRect();
-                  
-  //                 return {
-  //                   top: bounds.top - bodyRect.top,
-  //                   left: bounds.left - bodyRect.left
-  //                 }
-  //               }
-  //             }))
-  // };
-
-  // var highlightLabel = function(person, pic, isHighlight){
-
-  //   var target_div = d3.select('#label_' + person + "_" + pic);
-  //   if(isHighlight){
-  //     target_div.selectAll('text')
-  //               .style('font-weight', 'bold')
-  //   }
-  //   else{
-  //     target_div.selectAll('text')
-  //               .style('font-weight', 'normal')
-  //   }
-  // }
-
-  // var updateLabelviewholder = function(person){
-
-  //   clearLabelviewholder();
-
-
-  //     var data = person_image_list.filter(function(d){return d.Person == person;})
-  //     data.forEach(function(d){
-  //       d.isSelected = false;
-  //       d.Pic = +d.Pic;
-  //     })
-
-  //     // console.log(data)
-  //     var div = labelviewholder.selectAll('div')
-  //                .data(data).enter()
-  //                  .append('div')
-  //                  .style('display','flex')
-  //                  .attr('id',function(d){return 'label_' + d.Person + "_" + d.Pic;})
-
-  //   var image_labels = div.append('text')
-  //               .text(function(d){return d.Pic;})
-
-  //   data.forEach(function(d){
-  //     var target_div = d3.select('#label_' + d.Person + "_" + d.Pic);
-  //     for (var i = 0; i < d.CorrectLabel.length; i++) {
-  //       target_div.append('text')
-  //             .text(function(d){ return "\u00A0" + d.CorrectLabel[i]+ "\u00A0" ;})
-  //             .style('font-family','Courier New')
-  //             .style('color',"green")
-  //     }
-  //   })
-
-  // }
-
-  // var clearLabelviewholder = function(){
-  //   labelviewholder.selectAll('div').remove();
-  // }
-
-  // var clearImageholder = function(){
-  //   imageholder.selectAll("img").remove();
-  // }
-
-
-  // var dropdown = d3.select("#person_selection")
-  //                  .insert("select", "svg")
-  //                  .on("change", dropdownChange);
-
-
-  // dropdown.selectAll("option")
-  //     .data(people)
-  //   .enter().append("option")
-  //     .attr("value", function (d) { return d; })
-  //     .text(function (d) { return d;});
-
-  // // var SetLabel = function(){
-  // //   if(isAdd){
-  // //     var e = document.getElementById("selectLabel");
-  // //     selectedLabel = e.options[e.selectedIndex].text; 
-  // //     for (var i = 0; i < selectedIndices.length;i++) {
-  // //       if (! person_image_list[selectedIndices[i]].CorrectLabel.includes(selectedLabel)) {
-  // //         person_image_list[selectedIndices[i]].CorrectLabel.push(selectedLabel);
-  // //       }
-  // //     }
-  // //     isAdd = false;
-  // //   }
-  // //   if(isDelete){
-  // //     var e = document.getElementById("selectLabel");
-  // //     selectedLabel = e.options[e.selectedIndex].text; 
-  // //     for (var i = 0; i < selectedIndices.length;i++) {
-  // //       var label_list = person_image_list[selectedIndices[i]].CorrectLabel;
-  // //       for (var j = 0; j < label_list.length; j++) {
-  // //         if (label_list[j] == selectedLabel)
-  // //           person_image_list[selectedIndices[i]].CorrectLabel.splice(j,1);
-  // //       }
-  // //     }
-  // //     isDelete = false;
-  // //   }
-  // //   modal.style.display = "none";
-  // //   updateLabelviewholder(person_image_list[selectedIndices[0]].Person);
-  // //   updateWordCloud(person_image_list[selectedIndices[0]].Person);
-  // //   ClearSelectedIndices();
-  // // }
-
-  // var ClearSelectedIndices = function(){
-  //   for (var i = selectedIndices.length - 1; i >= 0; i--) {
-  //     d3.select('#img'+person_image_list[selectedIndices[i]].id)
-  //       .style('border',"10px solid transparent");
-  //   }
-  //   selectedIndices.splice(0,selectedIndices.length)
-
-  // }
+person_image_list.forEach(function(d,i){
+  d.id = +i;
 })
 
 var SetLabel = function(){
@@ -315,7 +144,6 @@ var SetLabel = function(){
     }
     modal.style.display = "none";
     updateLabelviewholder(person_image_list[selectedIndices[0]].Person);
-    // updateWordCloud(person_image_list[selectedIndices[0]].Person);
     updateWordCloud(person_image_list[selectedIndices[0]].Person);
     ClearSelectedIndices();
   }
@@ -347,7 +175,7 @@ var SetLabel = function(){
             .attr('id',function(d){return 'img'+ d.id})
             .attr('src',function(d){return d.Path;})  
             .on('mouseover',function(d,i){
-              console.log(d);
+              // console.log(d);
               d3.select('#hover_image')
                 .attr('src',d.Path)
                 .style('max-width','400px')
@@ -505,6 +333,18 @@ var SetLabel = function(){
     }
     selectedIndices.splice(0,selectedIndices.length)
 
+  }
+
+  var SaveResult = function(){
+
+  console.log(person_image_list)
+  var data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(person_image_list));
+  console.log(data)
+  var a = document.getElementById('ResultSaver');
+  console.log(a)
+  a.href = 'data:' + data;
+  a.download = 'i3_new_data.json';
+  // a.click();
   }
 
   

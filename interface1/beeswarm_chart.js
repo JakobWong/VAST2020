@@ -1,4 +1,4 @@
-var json_path = 'new_data.json';
+var json_path = 'q1.json';
 
 //Defining the margin conventions
 var margin = {top: 50, right: 30, bottom: 50, left: 100},
