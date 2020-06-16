@@ -188,9 +188,11 @@ var SetLabel = function(){
                                  .style('font-weight','bold')
             })
             .on('mouseout',function(d,i){
-              var target_div = d3.select('#label_' + d.Person + "_" + d.Pic)
-                                 .selectAll('text')
-                                 .style('font-weight','normal')
+              if(!d.isSelected){
+                var target_div = d3.select('#label_' + d.Person + "_" + d.Pic)
+                                   .selectAll('text')
+                                   .style('font-weight','normal')
+              }
               // d3.select('#hover_image')
                 // .attr('src',function(d){return d.Path;})
             })
@@ -200,6 +202,10 @@ var SetLabel = function(){
                   d3.select(this)
                     .style('border',"10px solid gold");
                   selectedIndices.push(d.id);
+
+                  var target_div = d3.select('#label_' + d.Person + "_" + d.Pic)
+                                 .selectAll('text')
+                                 .style('font-weight','bold')
                 }
                 else{
 
@@ -210,6 +216,10 @@ var SetLabel = function(){
                     .style('max-width','230px')
                     .style('max-height','95px')
                     .style('border',"10px solid transparent");
+
+                  var target_div = d3.select('#label_' + d.Person + "_" + d.Pic)
+                                 .selectAll('text')
+                                 .style('font-weight','normal')
 
                   var index = selectedIndices.indexOf(d.id);
                   selectedIndices.splice(index,1);
@@ -255,6 +265,8 @@ var SetLabel = function(){
         d.Pic = +d.Pic;
       })
 
+      data.sort(function(a,b) { return a.Pic - b.Pic } );
+
       // console.log(data)
       var div = labelviewholder.selectAll('div')
                  .data(data).enter()
@@ -264,12 +276,50 @@ var SetLabel = function(){
 
     var image_labels = div.append('text')
                 .text(function(d){return d.Pic;})
+                .on('click',function(d,i){
+                  if(!d.isSelected){
+                    d.isSelected = !d.isSelected;
+                    d3.select("#img"+d.id)
+                      .style('border',"10px solid gold");
+                    selectedIndices.push(d.id);
+
+                    var target_div = d3.select('#label_' + d.Person + "_" + d.Pic)
+                                       .selectAll('text')
+                                       .style('font-weight','bold')
+
+                    d3.select('#hover_image')
+                      .attr('src',d.Path)
+                      .style('max-width','400px')
+                      .style('max-height','320px')
+                      .style('width',"390px")
+                      .style('height',"310px")
+
+                  }
+                  else{
+
+                    d.isSelected = !d.isSelected;
+                    d3.select("#img"+d.id)
+                      .style("width","auto")
+                      .style("height","auto")
+                      .style('max-width','230px')
+                      .style('max-height','95px')
+                      .style('border',"10px solid transparent");
+
+                    var target_div = d3.select('#label_' + d.Person + "_" + d.Pic)
+                                       .selectAll('text')
+                                       .style('font-weight','normal')
+
+                    var index = selectedIndices.indexOf(d.id);
+                    selectedIndices.splice(index,1);
+                  }
+                })
 
     data.forEach(function(d){
       var target_div = d3.select('#label_' + d.Person + "_" + d.Pic);
       for (var i = 0; i < d.CorrectLabel.length; i++) {
+        var text = d.CorrectLabel[i]
         target_div.append('text')
-              .text(function(d){ return "\u00A0" + d.CorrectLabel[i]+ "\u00A0" ;})
+              .text(function(d){ return "\u00A0" + text + "\u00A0" ;})
               .style('font-family','Courier New')
               .style('color',"green")
       }
