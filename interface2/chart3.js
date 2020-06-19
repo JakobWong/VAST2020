@@ -6,10 +6,10 @@
 make_chart3();
 
 function make_chart3(){
-  var json_path = 'new_data.json'
+  var json_path = 'i3_new_data.json'
 
   //Defining the margin conventions
-  var width = 2400, height = 800;
+  var width = 2400, height = 1000;
 
   var margin = {top: 20, bottom: 20, left: 20, right: 20};
 
@@ -108,7 +108,11 @@ function make_chart3(){
     })
 
     data.forEach(function(d,i){
-      person_label_table[d.Person][d.Label] += 1;
+      var person = d.Person;
+      var label_list = d.CorrectLabel;
+      label_list.forEach(function(label){
+        person_label_table[person][label] += 1;
+      })
     })
 
     people.forEach(function(person){
@@ -141,13 +145,87 @@ function make_chart3(){
                   .call(d3.drag()
                   .on("start", dragstarted)
                   .on("drag", dragged)
-                  .on("end", dragended));  
+                  .on("end", dragended))
 
+    console.log(data_for_chart3.links)
     node.append('circle')
+        .attr("id",function(d){return "c" + d.id})
         .attr('r', 13)
         .attr('fill', function (d) {
             return color(d.group);
-        });
+        })
+        .on("mouseover",function(d){
+          if (d.group == 1){
+            // search for all labels that the person has
+            var label_list = [];
+            var label_value_dict = {};
+            data_for_chart3.links.forEach(function(link){
+              // console.log(link)
+              if (link.source.id == d.id){
+                label_list.push(link.target.id);
+                label_value_dict[link.target.id] = link.value;
+              }
+            })
+
+            var maxValue = 0;
+            for (var label in label_value_dict){
+              if(label_value_dict[label] > maxValue){
+                maxValue = label_value_dict[label]
+              }
+            }
+
+            label_list.forEach(function(label){
+              d3.selectAll("#c"+label)
+                .attr('r',20)
+                .attr('fill',"#fb8072")
+                .attr('opacity',label_value_dict[label]/maxValue)
+            })
+
+            var person_list = [];
+            var person_value_dict = {};
+            label_list.forEach(function(label){
+              data_for_chart3.links.forEach(function(link){
+                if(link.target.id == label){
+                  person_list.push(link.source.id);
+                  person_value_dict[link.source.id] = link.value;
+                }
+              })
+            })
+
+            var maxValue = 0;
+            for (var person in person_value_dict){
+              if(person_value_dict[person] > maxValue){
+                maxValue = person_value_dict[person]
+              }
+            }
+
+            person_list.forEach(function(person){
+              d3.selectAll("#c"+person)
+                .attr('r',20)
+                .attr('fill',"#8dd3c7")
+                .attr('opacity',person_value_dict[person]/maxValue)
+            })
+
+          }
+
+          d3.select(this)
+            .attr('fill',"gold")
+        })
+        .on('mouseout',function(d){
+          labels.forEach(function(label){
+            d3.select('#c'+label)
+              .attr('r', 13)
+              .attr('fill', function (d) {return color(2);})
+              .attr('opacity',1.0)
+          })
+
+          people.forEach(function(person){
+            d3.select('#c'+person)
+              .attr('r', 13)
+              .attr('fill', function (d) {return color(1);})
+              .attr('opacity',1.0)
+          })
+        })
 
     node.append("text")
         .attr("dx", -18)

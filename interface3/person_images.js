@@ -11,14 +11,14 @@ var modal = document.getElementById("myModal");
 var btn = document.getElementById("myBtn");
 
 // Define people list
-var people = ["Person1", "Person10", "Person11", "Person12", "Person13", 
-              "Person14", "Person15", "Person16", "Person17", "Person18", 
-              "Person19", "Person2", "Person20", "Person21", "Person22", 
-              "Person23", "Person24", "Person25", "Person26", "Person27", 
-              "Person28", "Person29", "Person3", "Person30", "Person31", 
-              "Person32", "Person33", "Person34", "Person35", "Person36", 
-              "Person37", "Person38", "Person39", "Person4", "Person40", 
-              "Person5", "Person6", "Person7", "Person8", "Person9"]
+var people = ["Person1", "Person2", "Person3", "Person4", "Person5", 
+              "Person6", "Person7", "Person8", "Person9", "Person10", 
+              "Person11", "Person12", "Person13", "Person14", "Person15", 
+              "Person16", "Person17", "Person18", "Person19", "Person20", 
+              "Person21", "Person22", "Person23", "Person24", "Person25", 
+              "Person26", "Person27", "Person28", "Person29", "Person30", 
+              "Person31", "Person32", "Person33", "Person34", "Person35", 
+              "Person36", "Person37", "Person38", "Person39", "Person40"]
 
 var imageholder = d3.select("#person_images")
           					.style("width","900px")

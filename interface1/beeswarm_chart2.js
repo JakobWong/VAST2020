@@ -13,13 +13,17 @@ var yValue = function(d) { return yScale(y(d)); };
 
 //Y scale
 var yScale = d3.scale.linear()
-               .domain([0.25002, 1])
-               .range([height*0.9, 0]);
+               .domain([0.25, 1])
+               .range([height*0.9, 0])
+               // .tickValues([.25, .5, .75, 1])
+               // .tickFormat(d3.format(".2f"));
 
 //Y axis    
 var yAxis = d3.svg.axis()
                   .scale(yScale)
-                  .orient("left");  
+                  .orient("left")
+                  .tickValues([.25, .5, .75, 1])
+                  .tickFormat(d3.format(".2f")); 
 
 //Draw y axes
 d3.select("#yAxis")
@@ -27,7 +31,7 @@ d3.select("#yAxis")
   .attr("height",height + margin.top + margin.bottom)
   .attr("width",margin.left)
   .append("g")
-  .attr("transform", "translate(70,"+ margin.top+")")
+  .attr("transform", "translate(99,"+ margin.top+")")
   .attr("class", "y-axis ")
   .call(yAxis)
   .selectAll(".tick line")
@@ -76,8 +80,29 @@ var svg = d3.select("#beeswarm")
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom + 50)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            // .append("g")
+            // .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+          
+svg.append('line')
+    .attr('x1',0)
+    .attr('y1',margin.top)
+    .attr('x2',margin.left+10000)
+    .attr('y2',margin.top)
+    .attr('fill','none')
+    .style('stroke','black')
+    .style('stroke-width',1);
+
+svg.append('line')
+    .attr('x1',0)
+    .attr('y1',margin.top+810)
+    .attr('x2',margin.left+10000)
+    .attr('y2',margin.top+800)
+    .attr('fill','none')
+    .style('stroke','black')
+    .style('stroke-width',1);
+
+svg  = svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
 //Draw x axes
 svg.append("g")
@@ -86,7 +111,7 @@ svg.append("g")
    .call(xAxis)
    .selectAll("text")
    // .attr("dx", width)
-   .attr("dy", -6)
+   .attr("dy", -50)
    .style("font-size", "15px")
    .style("text-anchor", "center")
 
@@ -116,23 +141,26 @@ d3.json(json_path, function(error, data) {
                    "id":d.id, "Person":d.Person, "Pic": d.Pic});
   })
 
-  console.log(new_data.filter(function(d){return d.Status == "Incorrect"}))
+  // console.log(new_data.filter(function(d){return d.Status == "Incorrect"}))
 
   //Draw bubbles
   svg.append("g")
-     .call(bubbleChart, new_data)
-     .attr("class", "bubbles")
-     .selectAll(".node")
-     .append("circle")
-     .attr("class",function(d){return d.Label;})
-     .attr("id", function(d){return "c" + d.id;})
-     .attr("r", function(d) { return d.r0; })
-     .attr("fill", function(d) { return colorScale(d.Label)})
-     .style("stroke-width", 2.0)
-     .style("stroke", function(d){ 
-      if (d.Status == "Incorrect"){ console.log(d); return "red";}
-      else if (d.Status == "Correct"){ return "green";}
-      return "transparent";});
+    .call(bubbleChart, new_data)
+    .attr("class", "bubbles")
+    .selectAll(".node")
+    .append("circle")
+    .attr("class",function(d){return d.Label;})
+    .attr("id", function(d){return "c" + d.id;})
+    .attr("r", function(d) { return d.r0; })
+    .attr('stroke', 'black')
+    .attr('stroke-width',1)
+    .attr("fill", function(d) {
+//      return colorScale(d.Label)})
+//      .style("stroke-width", 2.0)
+//      .style("stroke", function(d){
+     if (d.Status == "Incorrect"){ return "#fb8072";}
+     else if (d.Status == "Correct"){ return "#8dd3c7";}
+     return "transparent";});
 
   // make a list of label images and attach them to the corresponding ticks of x axis
   var label_image_list = [];
@@ -150,14 +178,64 @@ d3.json(json_path, function(error, data) {
                          .attr("width", 100)
                          .attr("height", 80)
                          .attr("x", -50)
-                         .attr("y", 10)
+                         .attr("y", -40)
 
   var image_borders = svg.select(".x-axis").selectAll(".tick")
-                   .append('rect')
-                   .attr('transform',"translate(-50,15)")
-                   .attr('class', 'image-border')
-                   .attr('width', 100)
-                   .attr('height', 70);
+                         .append('rect')
+                         .attr('transform',"translate(-50,15)")
+                         .attr('class', 'image-border')
+                         .attr('width', 100)
+                         .attr('height', 70);
+
+  var accuracy_list = []
+  labels.forEach(function(label){
+      var data_of_the_label = data.filter(function(d){return d.Label == label});
+      var correct_data = data_of_the_label.filter(function(d){return d.Status == "Correct"});
+      var num_correct = correct_data.length;
+      var num_total = (data_of_the_label.length == 1)? 0: data_of_the_label.length;
+      var percentage = num_total ? (num_correct/num_total * 100) : 0;
+      accuracy_list.push({
+        "label": label,
+        "num_correct": num_correct,
+        "num_total": num_total,
+        "percentage": percentage
+      })
+  })
+
+  // console.log(accuracy_in_percentage)
+  var percentage_monitor = svg.select(".x-axis").selectAll(".tick")
+                              .data(accuracy_list)
+                              .append('text')
+                              .append("tspan")
+                              .style("fill","green")
+                              .text(function(d){return d.num_correct})
+                              .attr("x", -50)
+                              .attr("y", 50)
+                              .append("tspan")
+                              .style("fill","black")
+                              .text("/")
+                              .attr("x", -35)
+                              .attr("y", 50)
+                              .append("tspan")
+                              .style("fill","blue")
+                              .text(function(d){return d.num_total })
+                              .attr("x", -25)
+                              .attr("y", 50)
+                              .append("tspan")
+                              .style("fill",function(d){
+                                return (d.percentage - 10.0 > 1e-6)? "green": "red";
+                              })
+                              .text(function(d){return " (" + d.percentage.toFixed(3) +"%)"})
+                              .attr("x", 0)
+                              .attr("y", 50)
+                              // .append('text')
+  
+  // svg.select(".x-axis").selectAll(".tick")
+  //    .append('text')
+  //    .text("correct")
+  //    .attr("x", -30)
+  //    .attr("y", 60)
+
 
   image_borders.on('click', function(d){
     if (!d.isSelected){
@@ -181,3 +259,4 @@ d3.json(json_path, function(error, data) {
 
 
 })
+

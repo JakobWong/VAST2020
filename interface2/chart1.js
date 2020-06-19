@@ -6,7 +6,7 @@
 make_chart1();
 
 function make_chart1(){
-  var json_path = 'new_data.json'
+  var json_path = 'i3_new_data.json'
 
   //Defining the margin conventions
   var margin = {top: 50, right: 30, bottom: 50, left: 100},
@@ -52,9 +52,13 @@ function make_chart1(){
     })
 
     data.forEach(function(d,i){
-      if (!label_person_array[d.Label].includes(d.Person)) {
-        label_person_array[d.Label].push(d.Person);
-      }
+      var person = d.Person;
+      var label_list = d.CorrectLabel;
+      label_list.forEach(function(label){
+        if (!label_person_array[label].includes(person)) {
+        label_person_array[label].push(person);
+        } 
+      })
     })
 
     var data_for_chart1 = [];
