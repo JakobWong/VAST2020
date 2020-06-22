@@ -14,7 +14,7 @@ function make_chart4(){
 	              "Person32", "Person33", "Person34", "Person35", "Person36", 
 	              "Person37", "Person38", "Person39", "Person40"]
 
-  var labels  = ["canadaPencil", "giftBag", "hairClip", "silverStraw", "cloudSign",
+    var labels  = ["canadaPencil", "giftBag", "hairClip", "silverStraw", "cloudSign",
                 "redBow", "turtle", "gClamp", "pumpkinNotes", "rainbowPens", "glassBead",
                 "eyeball", "legoBracelet", "trophy", "stickerBox", "rubiksCube", "noisemaker",
                 "spiderRing", "partyFavor", "miniCards", "pinkEraser", "foamDart", "birdCall",
@@ -25,21 +25,49 @@ function make_chart4(){
 
 	var json_path = 'i3_new_data.json'
 
-	var width = 800, height = 800;
+	var margin = {top: 80, right: 0, bottom: 10, left: 80},
+    width = 600,
+    height = 600;
 
-	var margin =  {top: 50, bottom: 50, left: 50, right: 50};
+    var x = d3.scaleBand().range([0, width])
+    var z = d3.scaleLinear().domain([0,10]).range([0,1])
 
 	//define svg
-    var svg = d3.select("#adjacency_matrix")
-              .attr("class","mainchart")
-              .append("svg")
-              .attr("width", width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom)
+    var svg = d3.select("#adjacency_matrix").append("svg")
+			    .attr("width", width + margin.left + margin.right)
+			    .attr("height", height + margin.top + margin.bottom)
+			    // .style("margin-left", -margin.left + "px")
+			  .append("g")
+    			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var div = d3.select("#adjacency_matrix").append("div") 
+              .attr("class", "tooltip_matrix")       
+              .style("opacity", 0);
+
+
+	var n = people.length;
 
     // create matrix
     d3.json(json_path,function(error,data){
 
     	if (error) throw error;
+
+    	// make a person-person network, store it in such a data format:
+    	// network = {
+    	// 				nodes:[],
+    	//				links:[],
+    	// }
+    	var person_person_network = {
+    		"nodes":[],
+    		"links":[]
+    	};
+
+    	people.forEach(function(person){
+    		person_person_network.nodes.push({
+    			"name":person,
+    			"group":1
+    		})
+    	})
 
     	var person_label_table = {};
 
@@ -64,66 +92,131 @@ function make_chart4(){
 	    	var person_i = people[i];
 	    	var label_list_i = person_label_table[person_i];
 
-	    	for (var j = i+1; j < people.length; j++) {
+	    	for (var j = 0; j < people.length; j++) {
     			var person_j = people[j];
-    			var weight = 0;
-    			for(var label in label_list_i){
-    				if(person_label_table[person_j][label] == 1){
-    					weight += 1;
-    				}
-    			}
-    			var grid = {"id": person_i + "-" + person_j, "x": j, "y": i, "weight": weight};
-    			data_for_chart4.push(grid);
+    			var value = 0;
+    			
+    			// if (i != j){
+				for(var label in label_list_i){
+    				if(person_label_table[person_j][label] == 1)
+    					value += 1;
+				}
+    			// }
+   
+    			person_person_network.links.push(
+    				{"source": i, 
+    				 "target": j, 
+    				 "value": value}
+    			);
 	    	}
 	    }
 
-	    console.log(data_for_chart4)
+	    var matrix = [];
 
-	    svg.append("g")
-	       .attr('transform',"translate("+margin.left+","+margin.top+")")
-	       .selectAll("rect")
-		   .data(data_for_chart4)
-		   .enter()
-		   .append("rect")
-		   .attr("class","grid")
-		   .attr("width",20)
-		   .attr("height",20)
-		   .attr("x", d=> d.x*20)
-		   .attr("y", d=> d.y*20)
-		   .style("fill-opacity", d=> d.weight * .1)
-		   .on("mouseover", gridOver);
+	    person_person_network.nodes.forEach(function(node, i) {
+		    node.index = i;
+		    matrix[i] = d3.range(n).map(function(j) { return {x: j, y: i, z: 0}; });
+		});
 
-		svg.append("g")
-		   .attr('transform',"translate("+margin.left+","+(margin.top-10)+")")
-		   .selectAll("text")
-		   .data(people)
-		   .enter()
-		   .append("text")
-		   .attr("x", (d,i) => i * 20 + 10)
-		   .text(d =>  d.substring(6,d.length))
-		   .style("text-anchor","middle")
-		   .style("font-size","10px")
+		console.log(matrix)
 
-		svg.append("g")
-		   .attr("transform","translate(40,50)")
-		   .selectAll("text")
-		   .data(people)
-		   .enter()
-		   .append("text")
-		   .attr("y",(d,i) => i * 20 + 10)
-		   .text(d => d.substring(6,d.length))
-		   .style("text-anchor","end")
-		   .style("font-size","10px")
 
-		// svg.selectAll("rect.grid").on("mouseover", gridOver); 
-	
-		function gridOver(d) {
-			console.log(d.weight)
-			// console.log(d3.selectAll("rect"))
-			svg.selectAll("rect")
-			   .style("stroke-width", function(p) { return p.x == d.x || p.y == d.y ? "3px" : "1px"});
-	
-		};
+	    // build the matrix based on person_person_network
+		person_person_network.links.forEach(function(link) {
+		    matrix[link.source][link.target].z += link.value;
+		});
+
+		console.log(matrix)
+
+		x.domain(d3.range(40));
+
+		svg.append("rect")
+		   .attr("class", "background")
+   		   .attr("width", width)
+	       .attr("height", height);
+
+		var row = svg.selectAll(".row")
+				     .data(matrix)
+				   .enter().append("g")
+				     .attr("class", "row")
+				     .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
+				     .each(row);
+
+		row.append("line")
+      	   .attr("x2", width);
+
+		row.append("text")
+	       .attr("x", -6)
+     	   .attr("y", x.bandwidth() / 2)
+		   .attr("dy", ".32em")
+		   .attr("text-anchor", "end")
+		   .text(function(d, i) { return person_person_network.nodes[i].name; })
+		   .on('click',function(d,i){
+		      	console.log(i,'clicked')
+		      	order(i)}
+		    )
+
+		var column = svg.selectAll(".column")
+					    .data(matrix)
+					.enter().append("g")
+					    .attr("class", "column")
+				        .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+
+		column.append("line")
+		      .attr("x1", -width);
+
+		column.append("text")
+		      .attr("x", 6)
+		      .attr("y", x.bandwidth() / 2)
+		      .attr("dy", ".32em")
+		      .attr("text-anchor", "start")
+		      .text(function(d, i) { return person_person_network.nodes[i].name; })
+
+		function row(row) {
+		    var cell = d3.select(this).selectAll(".cell")
+		        .data(row.filter(function(d) { return d.z; }))
+		      .enter().append("rect")
+		        .attr("class", "cell")
+		        .attr("x", function(d) { return x(d.x); })
+		        .attr("width", x.bandwidth())
+		        .attr("height", x.bandwidth())
+		        .style("fill-opacity", function(d) { return z(d.z); })
+		        .on('mouseover',function(d){
+		        	// console.log(d)
+		        	div.transition()    
+			           .duration(200)    
+			           .style("opacity", .9);    
+			        div.html(d.z)  
+			           .style("left", (d3.event.pageX) + "px")   
+			           .style("top", (d3.event.pageY - 28) + "px");  
+		        })
+		        .on("mouseout", function(d) {   
+		            div.transition()    
+		                .duration(500)    
+		                .style("opacity", 0); 
+      			});
+		}
+	 	
+	 	function order(selected_person_index) {
+	 		var i = selected_person_index;
+	 		console.log(i)
+	 		var people_order = d3.range(40).sort(function(a,b){return matrix[i][b].z - matrix[i][a].z})
+	 		console.log(people_order)
+		    x.domain(people_order);
+
+		    var t = svg.transition().duration(2500);
+
+		    t.selectAll(".row")
+		        .delay(function(d, i) { return x(i) * 4; })
+		        .attr("transform", function(d, i) { return "translate(0," + x(i) + ")"; })
+		      .selectAll(".cell")
+		        .delay(function(d) { return x(d.x) * 4; })
+		        .attr("x", function(d) { return x(d.x); });
+
+		    t.selectAll(".column")
+		        .delay(function(d, i) { return x(i) * 4; })
+		        .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+		}
 
     })
 }

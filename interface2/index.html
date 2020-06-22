@@ -9,17 +9,6 @@
 <!-- Connecting with D3 library-->
 <script src="https://d3js.org/d3.v4.min.js"></script>
 
-<!-- Create the charting area as a div with a sepecifi id -->  
-<div id="my_dataviz">
-  <div id="bar_chart">
-    <div id="bloc1"></div>
-    <div id="bloc2"></div>
-  </div>
-  <div id="scattor_plot"></div>
-  <div id="ontology_graph"></div>
-  <div id="adjacency_matrix"></div>
-</div>
-
 <style>
 
 /*Defining text stylings*/ 
@@ -145,14 +134,20 @@ div.tooltip {
   color: #fefefe;
 }
 
-div.mainchart{
-  overflow-x: auto;
-}
-
 #bar_chart {
   display: flex;
-  
 }
+
+#row1{
+  display:flex;
+  flex-direction: row;
+}
+
+#row2{
+  display:flex;
+  flex-direction: row;
+}
+
 
 #my_dataviz {
   display: flex;
@@ -202,8 +197,65 @@ div.tooltip {
     pointer-events: none;     
 }
 
+div.tooltip_matrix {   
+    position: absolute;     
+    text-align: center;     
+    width: 18px;          
+    height: 18px;     
+    padding: 2px;       
+    font: 12px sans-serif;    
+    background: lightsteelblue; 
+    border: 0px;    
+    border-radius: 8px;     
+    pointer-events: none;           
+}
+
+
+.background {
+  fill: #eee;
+}
+
+#bloc2 {
+  width: 960px;
+  height: 470px;
+  overflow-x: scroll;
+}
+
+.x-axis text,  .y-axis text {
+   font-family: 'Barlow', sans-serif;
+   font-weight: 300;
+   font-size:15px;
+   fill:black;
+color:black;
+}
+.y-axis path, .y-axis line {
+   fill: none;
+   stroke-width: 1;
+   stroke-opacity:1;
+stroke:black;
+}    
+.x-axis path {
+fill:none;
+}
+
   
 </style>
+
+<!-- Create the charting area as a div with a sepecifi id -->  
+<div id="my_dataviz">
+  <div id="row1">
+    <div id="bar_chart">
+      <div id="bloc1"></div>
+      <div id="bloc2"></div>
+    </div>
+    <div id="scattor_plot"></div>
+  </div>
+  <div id="row2">
+    
+    <div id="adjacency_matrix"></div>
+    <div id="ontology_graph"></div>
+  </div>
+</div>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.0.0/math.js"></script>

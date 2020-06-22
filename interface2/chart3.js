@@ -20,7 +20,7 @@ function make_chart3(){
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
               .append("g")
-              .attr("transform", "translate(" + margin.left + " , " + margin.top + ")")
+              .attr("transform", "translate(0,0)")
 
   var force = d3.forceSimulation() 
                 .force("charge", d3.forceManyBody().strength(-800).distanceMin(100).distanceMax(1000)) 

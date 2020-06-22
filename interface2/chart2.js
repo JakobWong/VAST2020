@@ -10,9 +10,9 @@ function make_chart2(){
   var json_path = 'i3_new_data.json';
 
   //Defining the margin conventions
-  var margin = {top: 50, right: 30, bottom: 50, left: 100},
-      width = 1000 - margin.left - margin.right,
-      height = 800 - margin.top - margin.bottom;
+  var margin = {top: 50, right: 30, bottom: 50, left: 70},
+      width = 400 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
 
   var x = d3.scaleLinear()
             .range([0, width]);
@@ -22,10 +22,9 @@ function make_chart2(){
 
   //Container
   var svg = d3.select("#scattor_plot")
-              .attr("class","mainchart")
               .append("svg")
               .attr("width", width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom + 50)
+              .attr("height", height + margin.top + margin.bottom)
               .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 

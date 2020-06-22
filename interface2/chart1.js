@@ -9,15 +9,14 @@ function make_chart1(){
   var json_path = 'i3_new_data.json'
 
   //Defining the margin conventions
-  var margin = {top: 50, right: 30, bottom: 50, left: 100},
-      width = 2400 - margin.left - margin.right,
-      height = 800 - margin.top - margin.bottom;
+  var margin = {top: 50, right: 30, bottom: 50, left: 70},
+      width = 800 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
 
   //define svg
   var svg = d3.select("#bloc2")
-              .attr("class","mainchart")
               .append("svg")
-              .attr("width", width + margin.left + margin.right)
+              .attr("width", 2 * width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
               .append("g")
               .attr("transform", "translate(0, " + margin.top+")")
@@ -34,7 +33,8 @@ function make_chart1(){
 
   // set the ranges
   var x = d3.scaleBand()
-            .range([0, width])
+            .range([0, 2 * width])
+            // .bandwidth()
             .padding(0.1);
 
   var y = d3.scaleLinear()
@@ -69,8 +69,8 @@ function make_chart1(){
     // Scale the range of the data in the domains
     x.domain(data_for_chart1.map(function(d) { return d.Label; }));
     var yMax = d3.max(data_for_chart1,function(d){return d.NumPerson;})
-    var yMin = d3.min(data_for_chart1,function(d){return d.NumPerson;})
-    y.domain([yMin, yMax]);
+    // var yMin = d3.min(data_for_chart1,function(d){return d.NumPerson;})
+    y.domain([0, yMax]);
 
 
     svg.selectAll("bar")
@@ -88,11 +88,11 @@ function make_chart1(){
         .call(d3.axisBottom(x).ticks(10))
       .selectAll("text")  
         .style("text-anchor", "end")
-        .attr("dx", "-.8em")
-        .attr("dy", ".10em")
-        .attr("transform", "rotate(-30)");
+        .attr("dx", "-.2em")
+        .attr("dy", ".6em")
+        .attr("transform", "rotate(-60)");
 
-    //Draw y axes
+    //Draw y axis
     d3.select("#bloc1")
       .append("svg")
       .attr("height",height + margin.top + margin.bottom)
@@ -100,7 +100,9 @@ function make_chart1(){
       .append("g")
       .attr("transform", "translate(70,"+ margin.top+")")
       .attr("class", "y-axis ")
-        .call(d3.axisLeft(y));
+      .call(d3.axisLeft(y))
+      .selectAll(".tick line")
+      // .attr("stroke-dasharray", "1, 2");  
              
   });
 }
