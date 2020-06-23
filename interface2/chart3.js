@@ -9,7 +9,7 @@ function make_chart3(){
   var json_path = 'i3_new_data.json'
 
   //Defining the margin conventions
-  var width = 2400, height = 1000;
+  var width = 1200, height = 1000;
 
   var margin = {top: 20, bottom: 20, left: 20, right: 20};
 

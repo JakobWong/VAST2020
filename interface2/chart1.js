@@ -17,7 +17,8 @@ function make_chart1(){
   var svg = d3.select("#bloc2")
               .append("svg")
               .attr("width", 2 * width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom)
+              .attr("height", height + margin.top + 2* margin.bottom)
+
               .append("g")
               .attr("transform", "translate(0, " + margin.top+")")
    
@@ -87,10 +88,13 @@ function make_chart1(){
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x).ticks(10))
       .selectAll("text")  
-        .style("text-anchor", "end")
-        .attr("dx", "-.2em")
-        .attr("dy", ".6em")
-        .attr("transform", "rotate(-60)");
+        .attr("y", 0)
+        .attr("x", 9)
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(90)")
+        .style("text-anchor", "start");
+
+
 
     //Draw y axis
     d3.select("#bloc1")

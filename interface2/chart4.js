@@ -182,10 +182,25 @@ function make_chart4(){
 		        .attr("height", x.bandwidth())
 		        .style("fill-opacity", function(d) { return z(d.z); })
 		        .on('mouseover',function(d){
-		        	// console.log(d)
+		        	if (d.z == 0){
+		        		var background_color = "#eff3ff";
+		        	}
+		        	else if (d.z == 1){
+		        		var background_color = "#bdd7e7";
+		        	}
+		        	else if (d.z == 2){
+		        		var background_color = "#6baed6";
+		        	}
+		        	else if (d.z == 3){
+		        		var background_color = "#3182bd";
+		        	}
+		        	else if (d.z == 4){
+		        		var background_color = "#08519c";
+		        	}
 		        	div.transition()    
 			           .duration(200)    
-			           .style("opacity", .9);    
+			           .style("opacity", .9)
+			           .style('background',background_color);   
 			        div.html(d.z)  
 			           .style("left", (d3.event.pageX) + "px")   
 			           .style("top", (d3.event.pageY - 28) + "px");  
