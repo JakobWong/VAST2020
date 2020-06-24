@@ -75,7 +75,10 @@ body {
       }
   
 /*Defining chart stylings*/
-    
+svg {
+  border:1px solid red;
+}    
+
 .legend {
         font-family: 'Barlow', sans-serif;
         font-weight: 100;
@@ -135,7 +138,10 @@ div.tooltip {
 }
 
 #bar_chart {
-  display: flex;
+  display:flex;
+  /* float:left; */
+  width:1300px;
+  border:2px solid blue;
 }
 
 #row1{
@@ -218,7 +224,11 @@ div.tooltip_matrix {
 #bloc2 {
   width: 960px;
   height: 470px;
-  overflow-x: scroll;
+}
+
+#scattor_plot {
+  border:2px solid green;
+  float:left;
 }
 
 .x-axis text,  .y-axis text {
@@ -244,16 +254,15 @@ fill:none;
 <!-- Create the charting area as a div with a sepecifi id -->  
 <div id="my_dataviz">
   <div id="row1">
-    <div id="bar_chart" style="border-style: solid;">
-      <div id="bloc1"></div>
+    <div id="bar_chart" >
+      <div id="bloc1""></div>
       <div id="bloc2"></div>
     </div>
-    <div id="scattor_plot" style="border-style: solid;"></div>
+    <div id="scattor_plot"></div>
   </div>
   <div id="row2">
-
-    <div id="adjacency_matrix" style="border-style: solid;"></div>
-    <div id="ontology_graph" style="border-style: solid;"></div>
+    <div id="adjacency_matrix"></div>
+    <div id="ontology_graph"></div>
   </div>
 </div>
 
