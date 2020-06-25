@@ -160,6 +160,11 @@ div.tooltip {
   flex-direction: column;
 }
 
+#ontology_graph{
+  display: flex;
+  /*flex-direction: row;*/
+}
+
 .image-border {
   fill: transparent;
   stroke: transparent;
@@ -255,14 +260,33 @@ fill:none;
 <div id="my_dataviz">
   <div id="row1">
     <div id="bar_chart" >
-      <div id="bloc1""></div>
+      <div id="bloc1"></div>
       <div id="bloc2"></div>
     </div>
     <div id="scattor_plot"></div>
   </div>
   <div id="row2">
     <div id="adjacency_matrix"></div>
-    <div id="ontology_graph"></div>
+    <div id="ontology_graph">
+      <div id="min_max_filter" style="width: 240px;">
+        <p>
+          <label for="minNumEdge" 
+                 style="display: inline-block; width: 240px; text-align: center;">
+                Object node min edges <span id="minNumEdge-value"></span>
+          </label>
+          <input type="number" id="minNumEdge" value="8">
+        </p>
+        <p>
+          <label for="maxNumEdge" 
+                 style="display: inline-block; width: 240px; text-align: center;">
+                Object node max edges <span id="maxNumEdge-value"></span>
+          </label>
+          <input type="number" id="maxNumEdge" value="8">
+        </p>
+      </div>
+      <div id="graph_display">
+      </div>
+    </div>
   </div>
 </div>
 
@@ -272,4 +296,5 @@ fill:none;
 <script src="chart2.js"></script>
 <script src="chart3.js"></script>
 <script src="chart4.js"></script>
+<!-- <script src="input_change.js"></script> -->
 <!-- Optional JavaScript -->

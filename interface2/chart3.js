@@ -14,7 +14,7 @@ function make_chart3(){
   var margin = {top: 20, bottom: 20, left: 20, right: 20};
 
   //define svg
-  var svg = d3.select("#ontology_graph")
+  var svg = d3.select("#graph_display")
               .attr("class","mainchart")
               .append("svg")
               .attr("width", width + margin.left + margin.right)
@@ -115,6 +115,15 @@ function make_chart3(){
       })
     })
 
+    var person_numphoto_array = {}
+    people.forEach(function(person){
+      person_numphoto_array[person] = 0;
+    })
+
+    data.forEach(function(d,i){
+      person_numphoto_array[d.Person] += 1;
+    })
+
     people.forEach(function(person){
       labels.forEach(function(label){
         var value = person_label_table[person][label];
@@ -122,22 +131,33 @@ function make_chart3(){
           data_for_chart3["links"].push({
             "source": person,
             "target": label,
-            "value": person_label_table[person][label]
+            "value": person_label_table[person][label],
+            "normalized_value": person_label_table[person][label] / person_numphoto_array[person]
           })
         }
-      })
+      }) 
     })
 
     force.nodes(data_for_chart3.nodes) 
          .force("link")
          .links(data_for_chart3.links)
+         // .style("stroke-width", function(d){return thickness(d.value)})
+
+    var min_value = d3.min(data_for_chart3.links.map(function(d){return d.value}))
+    var max_value = d3.max(data_for_chart3.links.map(function(d){return d.value}))
+    // console.log(min_value)
+    // console.log(max_value)
+    var thickness = d3.scaleLinear().domain([0,1]).range([1,15]);
+
 
     var link = svg.selectAll(".link")
                   .data(data_for_chart3.links)
                   .enter()
                   .append("line")
-                  .attr("class", "link");
- 
+                  .attr("id",function(d){return "link"+d.source.id+"_"+d.target.id})
+                  .attr("class", "link")
+                  .style("stroke-width", function(d){return thickness(d.normalized_value)})
+                  
     var node = svg.selectAll(".node")
                   .data(data_for_chart3.nodes)
                   .enter().append("g")
@@ -147,10 +167,20 @@ function make_chart3(){
                   .on("drag", dragged)
                   .on("end", dragended))
 
-    console.log(data_for_chart3.links)
+    var num_people_of_label = {};
+    labels.forEach(function(label){
+      num_people_of_label[label] = 0;
+      people.forEach(function(person){
+        if(person_label_table[person][label]){
+          num_people_of_label[label] += 1
+        }
+      })
+    })
+
     node.append('circle')
         .attr("id",function(d){return "c" + d.id})
-        .attr('r', 13)
+        .attr('r', function(d){
+          return (d.group == 1)? 13 : 2 * num_people_of_label[d.id]})
         .attr('fill', function (d) {
             return color(d.group);
         })
@@ -160,7 +190,6 @@ function make_chart3(){
             var label_list = [];
             var label_value_dict = {};
             data_for_chart3.links.forEach(function(link){
-              // console.log(link)
               if (link.source.id == d.id){
                 label_list.push(link.target.id);
                 label_value_dict[link.target.id] = link.value;
@@ -176,20 +205,34 @@ function make_chart3(){
 
             label_list.forEach(function(label){
               d3.selectAll("#c"+label)
-                .attr('r',20)
+                .attr('r',2 * num_people_of_label[label])
                 .attr('fill',"#fb8072")
-                .attr('opacity',label_value_dict[label]/maxValue)
             })
 
             var person_list = [];
             var person_value_dict = {};
-            label_list.forEach(function(label){
-              data_for_chart3.links.forEach(function(link){
-                if(link.target.id == label){
-                  person_list.push(link.source.id);
-                  person_value_dict[link.source.id] = link.value;
-                }
-              })
+
+            data_for_chart3.links.forEach(function(link){
+              if (label_list.includes(link.target.id)){
+                person_list.push(link.source.id);
+                person_value_dict[link.source.id] = link.value;
+              }
+              else{
+                d3.select("#link"+link.source.id+"_"+link.target.id)
+                  .attr('opacity',0)
+
+                d3.selectAll("#c"+link.source.id)
+                  .attr('opacity',0)
+
+                d3.selectAll("#c"+link.target.id)
+                  .attr('opacity',0)
+
+                d3.selectAll("#text"+link.target.id)
+                  .attr('opacity',0)
+
+                d3.selectAll("#text"+link.source.id)
+                  .attr('opacity',0)
+              }
             })
 
             var maxValue = 0;
@@ -201,11 +244,52 @@ function make_chart3(){
 
             person_list.forEach(function(person){
               d3.selectAll("#c"+person)
-                .attr('r',20)
+                .attr('r',13)
                 .attr('fill',"#8dd3c7")
-                .attr('opacity',person_value_dict[person]/maxValue)
+                .attr('opacity',1.0)
+
+              d3.selectAll("#text"+person)
+                .attr('opacity',1.0)
             })
 
+          }
+          if (d.group == 2){
+            var people_list = [];
+            data_for_chart3.links.forEach(function(link){
+              // console.log(link)
+              if (link.target.id == d.id){
+                people_list.push(link.source.id);
+              }
+            })
+
+            data_for_chart3.links.forEach(function(link){
+              if (link.target.id != d.id || !people_list.includes(link.source.id)){
+                d3.select("#link"+link.source.id+"_"+link.target.id)
+                  .attr('opacity',0)
+
+                d3.selectAll("#c"+link.source.id)
+                  .attr('opacity',0)
+
+                d3.selectAll("#c"+link.target.id)
+                  .attr('opacity',0)
+
+                d3.selectAll("#text"+link.target.id)
+                  .attr('opacity',0)
+
+                d3.selectAll("#text"+link.source.id)
+                  .attr('opacity',0)
+              }
+            })
+
+            people_list.forEach(function(person){
+              d3.selectAll("#c"+person)
+                .attr('r',13)
+                .attr('fill',"#8dd3c7")
+                .attr('opacity',1.0)
+
+              d3.selectAll("#text"+person)
+                .attr('opacity',1.0)
+            })
           }
 
           d3.select(this)
@@ -214,7 +298,7 @@ function make_chart3(){
         .on('mouseout',function(d){
           labels.forEach(function(label){
             d3.select('#c'+label)
-              .attr('r', 13)
+              .attr('r', function(){return 2 * num_people_of_label[label]})
               .attr('fill', function (d) {return color(2);})
               .attr('opacity',1.0)
           })
@@ -225,16 +309,112 @@ function make_chart3(){
               .attr('fill', function (d) {return color(1);})
               .attr('opacity',1.0)
           })
+
+          data_for_chart3.links.forEach(function(link){
+            d3.select("#link"+link.source.id+"_"+link.target.id)
+                  .attr('opacity',1.0)
+
+            d3.selectAll("#c"+link.source.id)
+              .attr('opacity',1.0)
+
+            d3.selectAll("#c"+link.target.id)
+              .attr('opacity',1.0)
+
+            d3.selectAll("#text"+link.target.id)
+              .attr('opacity',1.0)
+
+            d3.selectAll("#text"+link.source.id)
+              .attr('opacity',1.0)
+          })
+
+          var min_value = document.getElementById("minNumEdge").value
+          var max_value = document.getElementById("maxNumEdge").value
+
+          update_graph_by_min_max(min_value,max_value)
         })
 
+    d3.select("#minNumEdge").on("input", function() {
+      var max_value = document.getElementById("maxNumEdge").value
+      update_graph_by_min_max(+this.value,max_value);
+    });
+
+    d3.select("#maxNumEdge").on("input", function() {
+      var min_value = document.getElementById("minNumEdge").value
+      update_graph_by_min_max(min_value,+this.value);
+    });
+
+    var update_graph_by_min_max = function(min_value, max_value){
+      var hidden_label_list = [];
+      data_for_chart3.links.forEach(function(link){
+        var label = link.target.id;
+        if (num_people_of_label[link.target.id] < min_value){
+
+          d3.select("#link"+link.source.id+"_"+link.target.id)
+            .attr('opacity',0)
+
+          d3.selectAll("#c"+link.target.id)
+            .attr('opacity',0)
+
+          d3.selectAll("#text"+link.target.id)
+            .attr('opacity',0)
+          hidden_label_list.push(label);
+        }
+        else if (num_people_of_label[link.target.id] > max_value) {
+          d3.select("#link"+link.source.id+"_"+link.target.id)
+            .attr('opacity',0)
+
+          d3.selectAll("#c"+link.target.id)
+            .attr('opacity',0)
+
+          d3.selectAll("#text"+link.target.id)
+            .attr('opacity',0)
+          hidden_label_list.push(label);
+        }
+        else{
+          d3.select("#link"+link.source.id+"_"+link.target.id)
+            .attr('opacity',1.0)
+
+          d3.selectAll("#c"+link.target.id)
+            .attr('opacity',1.0)
+
+          d3.selectAll("#text"+link.target.id)
+            .attr('opacity',1.0)
+        }
+    })
+
+    // hide isolated people nodes
+    people.forEach(function(person){
+      var num_edges = 0;
+      var num_edges_to_hide = 0;
+      labels.forEach(function(label){
+        if (person_label_table[person][label]){
+          num_edges += 1;
+          if(hidden_label_list.includes(label)){
+            num_edges_to_hide += 1;
+          }
+        }
+      })
+      if (num_edges == num_edges_to_hide){
+        
+        d3.selectAll("#c"+person)
+          .attr('opacity',0)
+
+        d3.selectAll("#text"+person)
+          .attr('opacity',0)
+      }
+    })
+
+      
+    }
+    
+
     node.append("text")
+        .attr('id',function(d){return "text"+d.id})
         .attr("dx", -18)
         .attr("dy", 8)
         .style("font-family", "overwatch")
         .style("font-size", "18px")
-        .text(function (d) {
-            return d.id
-        });
+        .text(function (d) {return d.id});
 
     force.on("tick", function () {
         link.attr("x1", function (d) {

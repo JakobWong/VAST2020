@@ -66,6 +66,8 @@ function make_chart1(){
       data_for_chart1.push({"Label":d, "NumPerson": label_person_array[d].length});
     })
 
+    data_for_chart1.sort(function(a,b){return a.NumPerson - b.NumPerson;})
+
     // Scale the range of the data in the domains
     x.domain(data_for_chart1.map(function(d) { return d.Label; }));
     // var yMax = d3.max(data_for_chart1,function(d){return d.NumPerson;})
