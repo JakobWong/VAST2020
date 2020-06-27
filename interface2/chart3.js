@@ -92,6 +92,14 @@ function make_chart3(){
     })
   })
 
+  var hidden_node_list = {};
+  people.forEach(function(person){
+    hidden_node_list[person] = false;
+  })
+  labels.forEach(function(label){
+    hidden_node_list[label] = false;
+  })
+
   // Data loading 
   d3.json(json_path, function(error, data) {
 
@@ -141,12 +149,10 @@ function make_chart3(){
     force.nodes(data_for_chart3.nodes) 
          .force("link")
          .links(data_for_chart3.links)
-         // .style("stroke-width", function(d){return thickness(d.value)})
 
     var min_value = d3.min(data_for_chart3.links.map(function(d){return d.value}))
     var max_value = d3.max(data_for_chart3.links.map(function(d){return d.value}))
-    // console.log(min_value)
-    // console.log(max_value)
+
     var thickness = d3.scaleLinear().domain([0,1]).range([1,15]);
 
 
@@ -184,8 +190,10 @@ function make_chart3(){
         .attr('fill', function (d) {
             return color(d.group);
         })
+        .attr('opacity',1.0)
         .on("mouseover",function(d){
-          if (d.group == 1){
+          if(!hidden_node_list[d.id]){
+            if (d.group == 1){
             // search for all labels that the person has
             var label_list = [];
             var label_value_dict = {};
@@ -232,6 +240,9 @@ function make_chart3(){
 
                 d3.selectAll("#text"+link.source.id)
                   .attr('opacity',0)
+
+                d3.selectAll("#tspan"+link.source.id+"_"+"number")
+                  .attr('opacity',0)
               }
             })
 
@@ -252,48 +263,72 @@ function make_chart3(){
                 .attr('opacity',1.0)
             })
 
-          }
-          if (d.group == 2){
-            var people_list = [];
-            data_for_chart3.links.forEach(function(link){
-              // console.log(link)
-              if (link.target.id == d.id){
-                people_list.push(link.source.id);
-              }
-            })
+            }
+            if (d.group == 2){
+          
+              var people_list = [];
+              data_for_chart3.links.forEach(function(link){
+                
+                if (link.target.id == d.id){
+                  people_list.push(link.source.id);
+                }
+              })
 
-            data_for_chart3.links.forEach(function(link){
-              if (link.target.id != d.id || !people_list.includes(link.source.id)){
-                d3.select("#link"+link.source.id+"_"+link.target.id)
-                  .attr('opacity',0)
+              data_for_chart3.links.forEach(function(link){
+                if (link.target.id != d.id || !people_list.includes(link.source.id)){
+                  d3.select("#link"+link.source.id+"_"+link.target.id)
+                    .attr('opacity',0)
 
-                d3.selectAll("#c"+link.source.id)
-                  .attr('opacity',0)
+                  d3.selectAll("#c"+link.source.id)
+                    .attr('opacity',0)
 
-                d3.selectAll("#c"+link.target.id)
-                  .attr('opacity',0)
+                  d3.selectAll("#c"+link.target.id)
+                    .attr('opacity',0)
 
-                d3.selectAll("#text"+link.target.id)
-                  .attr('opacity',0)
+                  d3.selectAll("#text"+link.target.id)
+                    .attr('opacity',0)
 
-                d3.selectAll("#text"+link.source.id)
-                  .attr('opacity',0)
-              }
-            })
+                  d3.selectAll("#text"+link.source.id)
+                    .attr('opacity',0)
 
-            people_list.forEach(function(person){
-              d3.selectAll("#c"+person)
-                .attr('r',13)
-                .attr('fill',"#8dd3c7")
+                  d3.selectAll("#tspan"+link.source.id+"_"+"number")
+                    .attr('opacity',0)
+                }
+              })
+
+              var numbers = [];
+              people_list.forEach(function(person){
+                d3.selectAll("#c"+person)
+                  .attr('r',13)
+                  .attr('fill',"#8dd3c7")
+                  .attr('opacity',1.0)
+
+                d3.selectAll("#text"+person)
+                  .attr('opacity',1.0)
+
+                d3.selectAll("#tspan"+person+"_"+"number")
+                  .attr('opacity',1.0)
+                  .text(function(){
+                    return person_label_table[person][d.id] + "/" + person_numphoto_array[person]
+                  })
+
+                numbers.push(person_label_table[person][d.id]/person_numphoto_array[person])
+              })
+
+              d3.selectAll("#tspan"+d.id+"_"+"number")
                 .attr('opacity',1.0)
+                .text(function(){
+                  return math.mean(numbers).toFixed(5) + " +/- " + math.std(numbers).toFixed(5);
+                })
 
-              d3.selectAll("#text"+person)
-                .attr('opacity',1.0)
-            })
+              showImage(d.id);
+              console.log(data_for_chart3.links)
           }
 
-          d3.select(this)
-            .attr('fill',"gold")
+            d3.select(this)
+              .attr('fill',"gold")
+
+          }
         })
         .on('mouseout',function(d){
           labels.forEach(function(label){
@@ -325,6 +360,13 @@ function make_chart3(){
 
             d3.selectAll("#text"+link.source.id)
               .attr('opacity',1.0)
+
+            d3.selectAll("#tspan"+link.source.id+"_"+"number")
+              .attr('opacity',0)
+
+            d3.selectAll("#tspan"+link.target.id+"_"+"number")
+                .attr('opacity',0)
+
           })
 
           var min_value = document.getElementById("minNumEdge").value
@@ -332,6 +374,13 @@ function make_chart3(){
 
           update_graph_by_min_max(min_value,max_value)
         })
+
+    var showImage = function(label){
+      d3.select('#hover_image')
+        .attr('src',"ExampleImages/"+label+".jpg")
+        .style('max-width','220px')
+        .style('width',"220px")
+    }
 
     d3.select("#minNumEdge").on("input", function() {
       var max_value = document.getElementById("maxNumEdge").value
@@ -358,6 +407,9 @@ function make_chart3(){
           d3.selectAll("#text"+link.target.id)
             .attr('opacity',0)
           hidden_label_list.push(label);
+
+          hidden_node_list[link.source.id] = true;
+          hidden_node_list[link.target.id] = true;
         }
         else if (num_people_of_label[link.target.id] > max_value) {
           d3.select("#link"+link.source.id+"_"+link.target.id)
@@ -369,6 +421,9 @@ function make_chart3(){
           d3.selectAll("#text"+link.target.id)
             .attr('opacity',0)
           hidden_label_list.push(label);
+
+          hidden_node_list[link.source.id] = true;
+          hidden_node_list[link.target.id] = true;
         }
         else{
           d3.select("#link"+link.source.id+"_"+link.target.id)
@@ -379,6 +434,10 @@ function make_chart3(){
 
           d3.selectAll("#text"+link.target.id)
             .attr('opacity',1.0)
+
+
+          hidden_node_list[link.source.id] = false;
+          hidden_node_list[link.target.id] = false;
         }
     })
 
@@ -409,12 +468,22 @@ function make_chart3(){
     
 
     node.append("text")
+        .append("tspan")
         .attr('id',function(d){return "text"+d.id})
         .attr("dx", -18)
         .attr("dy", 8)
         .style("font-family", "overwatch")
         .style("font-size", "18px")
-        .text(function (d) {return d.id});
+        .text(function (d) {return d.id})
+
+    node.selectAll("text")
+        .append("tspan")
+        .attr('id',function(d){return "tspan"+d.id+"_"+"number"})
+        .attr("dx", -36)
+        .attr("dy", 16)
+        .style("font-family", "overwatch")
+        .style("font-size", "18px")
+        .text(" ")
 
     force.on("tick", function () {
         link.attr("x1", function (d) {

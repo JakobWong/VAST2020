@@ -268,7 +268,7 @@ fill:none;
   <div id="row2">
     <div id="adjacency_matrix"></div>
     <div id="ontology_graph">
-      <div id="min_max_filter" style="width: 240px;">
+      <div id="min_max_filter" style="width: 240px; display: flex; flex-direction: column;">
         <p>
           <label for="minNumEdge" 
                  style="display: inline-block; width: 240px; text-align: center;">
@@ -283,6 +283,9 @@ fill:none;
           </label>
           <input type="number" id="maxNumEdge" value="8">
         </p>
+        <div id="image_holder">
+          <img id="hover_image" style="width: 240px; height: auto;"></img>
+        </div>
       </div>
       <div id="graph_display">
       </div>

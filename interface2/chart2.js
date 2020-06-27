@@ -150,7 +150,7 @@ function make_chart2(){
       .attr("y",0)
       .style("font-size","18px")
       .attr("transform", "rotate(-90)")
-      .text("Y-axis label here")
+      .text("Number of Photos")
     svg.append("g")
       .attr("transform","translate("+width/2+","+(height+45)+")")
       .append("text") 
@@ -158,6 +158,6 @@ function make_chart2(){
       .attr("x",0)
       .attr("y",0)
       .style("font-size","18px")
-      .text("X-axis label here")
+      .text("Number of Objects")
   });
 }
