@@ -253,6 +253,14 @@ stroke:black;
 fill:none;
 }
 
+#people_images {
+  display: flex;
+  flex-direction: row;
+  /*width: 2000px;*/
+  padding: 0 4px;
+}
+
+
   
 </style>
 
@@ -264,9 +272,11 @@ fill:none;
       <div id="bloc2"></div>
     </div>
     <div id="scattor_plot"></div>
+    <div id="adjacency_matrix"></div>
+
   </div>
   <div id="row2">
-    <div id="adjacency_matrix"></div>
+    <!-- <div id="adjacency_matrix"></div> -->
     <div id="ontology_graph">
       <div id="min_max_filter" style="width: 240px; display: flex; flex-direction: column;">
         <p>
@@ -287,14 +297,15 @@ fill:none;
           <img id="hover_image" style="width: 240px; height: auto;"></img>
         </div>
       </div>
-      <div id="graph_display">
-      </div>
+        <div id="graph_display"></div>
     </div>
+    <div id="people_images"></div>
   </div>
 </div>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.0.0/math.js"></script>
+<script src="caption_list.js"></script>
 <script src="chart1.js"></script>
 <script src="chart2.js"></script>
 <script src="chart3.js"></script>

@@ -9,7 +9,7 @@ function make_chart3(){
   var json_path = 'i3_new_data.json'
 
   //Defining the margin conventions
-  var width = 1200, height = 1000;
+  var width = 800, height = 800;
 
   var margin = {top: 20, bottom: 20, left: 20, right: 20};
 
@@ -100,10 +100,18 @@ function make_chart3(){
     hidden_node_list[label] = false;
   })
 
+  var people_images_div = d3.select('#people_images');
+
   // Data loading 
   d3.json(json_path, function(error, data) {
 
     if (error) throw error;
+
+    var nested_data =  d3.nest()
+                         .key(function(d) { return d.Person; })
+                         .entries(data);
+
+    console.log(nested_data)
 
     var person_label_table = {};
 
@@ -217,12 +225,12 @@ function make_chart3(){
                 .attr('fill',"#fb8072")
             })
 
-            var person_list = [];
+            var people_list = [];
             var person_value_dict = {};
 
             data_for_chart3.links.forEach(function(link){
               if (label_list.includes(link.target.id)){
-                person_list.push(link.source.id);
+                people_list.push(link.source.id);
                 person_value_dict[link.source.id] = link.value;
               }
               else{
@@ -253,7 +261,7 @@ function make_chart3(){
               }
             }
 
-            person_list.forEach(function(person){
+            people_list.forEach(function(person){
               d3.selectAll("#c"+person)
                 .attr('r',13)
                 .attr('fill',"#8dd3c7")
@@ -323,6 +331,7 @@ function make_chart3(){
 
               showImage(d.id);
               console.log(data_for_chart3.links)
+              showPersonImages(people_list,d.id);
           }
 
             d3.select(this)
@@ -380,6 +389,53 @@ function make_chart3(){
         .attr('src',"ExampleImages/"+label+".jpg")
         .style('max-width','220px')
         .style('width',"220px")
+    }
+
+    var showPersonImages = function(people_list,label){
+      var numPerson = people_list.length;
+      people_images_div.selectAll("div").remove();
+
+      for (var i = 0; i < people_list.length; i++) {
+        var person = people_list[i]
+
+        var person_div = people_images_div.append('div')
+                         // .style('flex', 1.0/numPerson)
+                         .style('max-width',1.0/numPerson)
+                         .style('padding','0 4px')
+                         .append('text')
+                         .style('font-size','20px')
+                         .text(person)
+
+        var j = 0
+        for (; j < nested_data.length; j++){
+          if (nested_data[j].key == person)
+            break;
+        }
+
+        var image_list = nested_data[j].values;
+        for(j = 0; j < image_list.length; j++){
+          var caption_path = image_list[j].Path.split('.')[0] + 'caption.txt'
+          var img = person_div.append('img')
+                     .style('margin-top', '8px')
+                     .style('vertical-align','middle')
+                     .style('width','100%')
+                     .attr('src',image_list[j].Path)
+                     .style('border',function(){
+                      if (image_list[j].CorrectLabel.includes(label))
+                        return '4px solid gold'
+                      else
+                        return '4px solid transparent'
+                     })
+          if (caption_text[image_list[j].Person+"_"+image_list[j].Pic]){
+            person_div.append('text')
+                      .text(caption_text[image_list[j].Person+"_"+image_list[j].Pic])
+            // console.log(caption_text[image_list[j].Person+"_"+image_list[j].Pic])
+          }
+          
+        }
+
+      }
+
     }
 
     d3.select("#minNumEdge").on("input", function() {

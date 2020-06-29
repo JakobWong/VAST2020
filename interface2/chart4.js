@@ -25,9 +25,9 @@ function make_chart4(){
 
 	var json_path = 'i3_new_data.json'
 
-	var margin = {top: 80, right: 0, bottom: 10, left: 80},
-    width = 600,
-    height = 600;
+	var margin = {top: 30, right: 30, bottom: 30, left: 30},
+    width = 400,
+    height = 400;
 
     var x = d3.scaleBand().range([0, width])
     var z = d3.scaleLinear().domain([0,10]).range([0,1])
@@ -150,7 +150,13 @@ function make_chart4(){
      	   .attr("y", x.bandwidth() / 2)
 		   .attr("dy", ".32em")
 		   .attr("text-anchor", "end")
-		   .text(function(d, i) { return person_person_network.nodes[i].name; })
+		   .attr('font-size',12)
+		   .text(function(d, i) { 
+		   		var  person_name = person_person_network.nodes[i].name
+		   		if (person_name[person_name.length-2] == 'n')
+		   			return person_name[0] + person_name[person_name.length-1]; 
+		   		else
+		   			return person_name[0] + person_name[person_name.length-2] + person_name[person_name.length-1] ;})
 		   .on('click',function(d,i){
 		      	console.log(i,'clicked')
 		      	order(i)}
@@ -170,7 +176,13 @@ function make_chart4(){
 		      .attr("y", x.bandwidth() / 2)
 		      .attr("dy", ".32em")
 		      .attr("text-anchor", "start")
-		      .text(function(d, i) { return person_person_network.nodes[i].name; })
+		      .attr('font-size',12)
+		   	  .text(function(d, i) { 
+		   		var  person_name = person_person_network.nodes[i].name
+		   		if (person_name[person_name.length-2] == 'n')
+		   			return person_name[0] + person_name[person_name.length-1]; 
+		   		else
+		   			return person_name[0] + person_name[person_name.length-2] + person_name[person_name.length-1] ;})
 
 		function row(row) {
 		    var cell = d3.select(this).selectAll(".cell")
