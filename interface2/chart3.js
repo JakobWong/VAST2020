@@ -394,17 +394,40 @@ function make_chart3(){
     var showPersonImages = function(people_list,label){
       var numPerson = people_list.length;
       people_images_div.selectAll("div").remove();
+      people_images_div.selectAll("h1").remove();
+
+      // var categoryTitle = document.createElement("h1")
+      // categoryTitle.innerHTML = 'rubiksCube<br>';
+      // document.getElementById('people_images').appendChild(categoryTitle);
+
 
       for (var i = 0; i < people_list.length; i++) {
         var person = people_list[i]
 
-        var person_div = people_images_div.append('div')
-                         // .style('flex', 1.0/numPerson)
-                         .style('max-width',1.0/numPerson)
-                         .style('padding','0 4px')
-                         .append('text')
-                         .style('font-size','20px')
-                         .text(person)
+        var columnDiv = document.createElement('div');
+        columnDiv.setAttribute("id",person+"_column")
+        columnDiv.classList.add('personColumn')
+        document.getElementById('people_images').appendChild(columnDiv);
+
+        var personSpan = document.createElement("h2")
+        personSpan.innerHTML = person;
+        personSpan.classList.add('personHeader');        
+        columnDiv.appendChild(personSpan);
+
+        var personStats = document.createElement('span');
+        personStats.innerHTML = '25/63 images<hr>';
+        columnDiv.appendChild(personStats);
+
+        columnDiv.appendChild(document.createElement("br"));
+
+        // var person_div = people_images_div.append('div')
+        //                  // .style('flex', 1.0/numPerson)
+        //                 //  .style('max-width',1.0/numPerson)
+        //                  .style('max-width',100)
+        //                  .style('padding','0px')
+        //                  .append('text')
+        //                  .style('font-size','20px')
+        //                  .text(person)
 
         var j = 0
         for (; j < nested_data.length; j++){
@@ -413,25 +436,48 @@ function make_chart3(){
         }
 
         var image_list = nested_data[j].values;
+
+        image_list.sort(function(x,y) {
+          return y.CorrectLabel.includes(label) - x.CorrectLabel.includes(label);
+        });
+
         for(j = 0; j < image_list.length; j++){
-          var caption_path = image_list[j].Path.split('.')[0] + 'caption.txt'
-          var img = person_div.append('img')
-                     .style('margin-top', '8px')
-                     .style('vertical-align','middle')
-                     .style('width','100%')
-                     .attr('src',image_list[j].Path)
-                     .style('border',function(){
-                      if (image_list[j].CorrectLabel.includes(label))
-                        return '4px solid gold'
-                      else
-                        return '4px solid transparent'
-                     })
-          if (caption_text[image_list[j].Person+"_"+image_list[j].Pic]){
-            person_div.append('text')
-                      .text(caption_text[image_list[j].Person+"_"+image_list[j].Pic])
-            // console.log(caption_text[image_list[j].Person+"_"+image_list[j].Pic])
-          }
+
           
+          // var caption_path = image_list[j].Path.split('.')[0] + 'caption.txt'
+          // var img = person_div.append('img')
+          //            .style('margin-top', '8px')
+          //            .style('vertical-align','middle')
+          //            .style('width','100%')
+          //            .attr('src',image_list[j].Path)
+          //            .style('border',function(){
+          //             if (image_list[j].CorrectLabel.includes(label))
+          //               return '4px solid gold'
+          //             else
+          //               return '4px solid transparent'
+          //            })
+
+          
+          var iimg = document.createElement('img');
+          iimg.src = image_list[j].Path;
+          if (image_list[j].CorrectLabel.includes(label)) {
+            iimg.classList.add('highlightedImage');
+          } else {
+            iimg.classList.add('unhighlightedImage')
+          }
+          columnDiv.appendChild(iimg);
+
+          var pictureName = document.createElement('div')
+          var pictureNameText = '<b>Picture 32</b><br/>';//'<b>'+image_list[j].Path.split('.').replace('MC2-Image-Data/'+person+'/'+person,'') + '</b><br>';
+          
+          if (caption_text[image_list[j].Person+"_"+image_list[j].Pic]){
+            pictureNameText += caption_text[image_list[j].Person+"_"+image_list[j].Pic];
+            
+            // console.log(caption_text[image_list[j].Person+"_"+image_list[j].Pic])
+          } 
+          pictureName.classList.add('personColumnCaption');     
+          pictureName.innerHTML = pictureNameText;
+          columnDiv.appendChild(pictureName);       
         }
 
       }
