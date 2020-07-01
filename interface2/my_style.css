@@ -1,0 +1,258 @@
+/*Defining text stylings*/ 
+  
+#h1 {
+  font-size: 50px;
+  margin: 0px 0px 2px 0px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 100;
+  font-variant: small-caps slashed-zero;
+  color: #f206d3;
+  }
+  
+#h2 {
+  font-size: 20px;
+  margin: 0px 0px 0px 0px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 200;
+  font-variant: small-caps slashed-zero;
+  color: #478adb;
+  }
+  
+#link {
+  font-family: 'Barlow', sans-serif;
+  font-size: 6px;
+  font-variant: small-caps slashed-zero;
+  margin: 8px 10px 2px 4px;
+  color: #778287;
+}
+ 
+a:link, a:visited, a:active {
+  text-decoration: none;
+  color: #778287;
+  border-bottom: 0.6px dotted #D1D5D7;
+}
+  
+body {
+  font-family: 'Barlow', sans-serif;
+  background-color:white;
+}
+          
+/*Defining axis stylings*/
+
+.x-axis text,  .y-axis text {
+        font-family: 'Barlow', sans-serif;
+        font-weight: 100;
+        font-size:10px;
+        opacity:0.8;
+        fill: #778287;
+      }
+
+.y-axis path, .x-axis path {
+        fill: none;
+        stroke-width: 0;
+        stroke-opacity:1;
+        stroke: #778287;
+      }
+
+.x-axis line, .y-axis line {
+        fill: none;
+        stroke-width: 0;
+        stroke-opacity:1;
+        stroke: #778287;
+      }
+  
+/*Defining chart stylings*/
+svg {
+  border:1px solid red;
+}    
+
+div.tooltip { 
+    position: absolute;     
+    text-align: center;     
+}
+
+#bar_chart {
+  display:flex;
+  /* float:left; */
+  width:1300px;
+  border:2px solid blue;
+}
+
+#row1{
+  display:flex;
+  flex-direction: row;
+}
+
+#row2{
+  display:flex;
+  flex-direction: row;
+}
+
+
+#my_dataviz {
+  display: flex;
+  flex-direction: column;
+}
+
+#ontology_graph{
+  display: flex;
+  /*flex-direction: row;*/
+}
+
+.image-border {
+  fill: transparent;
+  stroke: transparent;
+  shape-rendering: crispEdges;
+}
+
+img {
+  /*display: flex;*/
+  border: 10px solid transparent;
+  max-width:230px;
+  max-height:95px;
+  width: auto;
+  height: auto;
+  /*padding: 10px;*/
+}
+
+.link {
+  stroke: #F4F2C9;
+}
+
+.node text {
+    pointer-events: none;
+    font: 10px sans-serif;
+}
+
+@font-face {
+    font-family: 'overwatch';
+    src: url('fonts/koverwatch.woff2');
+}
+
+/*div.tooltip { 
+    position: absolute;     
+    text-align: center;     
+    width: 100px;          
+    height: 45px;         
+    padding: 2px;       
+    font: 12px sans-serif;    
+    background: lightsteelblue; 
+    border: 0px;    
+    border-radius: 8px;     
+    pointer-events: none;     
+}*/
+
+div.tooltip_matrix {   
+    position: absolute;     
+    text-align: center;     
+    width: 18px;          
+    height: 18px;     
+    padding: 2px;       
+    font: 12px sans-serif;    
+    background: lightsteelblue; 
+    border: 0px;    
+    border-radius: 8px;     
+    pointer-events: none;           
+}
+
+
+.background {
+  fill: #eee;
+}
+
+#bloc2 {
+  width: 960px;
+  height: 470px;
+}
+
+#scattor_plot {
+  border:2px solid green;
+  float:left;
+}
+
+.x-axis text,  .y-axis text {
+   font-family: 'Barlow', sans-serif;
+   font-weight: 300;
+   font-size:15px;
+   fill:black;
+color:black;
+}
+.y-axis path, .y-axis line {
+   fill: none;
+   stroke-width: 1;
+   stroke-opacity:1;
+stroke:black;
+}    
+.x-axis path {
+fill:none;
+}
+
+#people_images {
+  display: flex;
+  flex-direction: row;
+  /*width: 2000px;*/
+  /* padding: 0 4px; */
+}
+
+.personColumn {
+  /* border:1px solid green; */
+  width:150px;
+  float:left;
+  margin-right:20px;
+}
+
+.personHead {
+  font-size:2em;
+  text-align:center;
+  margin-bottom:-20px;
+  padding-bottom:0px;
+}
+
+.unhighlightedImage {
+  margin-top:30px;
+  width:100%;
+  border:1px solid black;
+}
+
+.nodeName{
+  font-family: sans-serif;
+  font-size: 30px;
+  text-anchor: middle;
+}
+
+.nodeStats{
+  font-family: sans-serif;
+  font-size: 30px;
+  text-anchor: middle;
+}
+
+.peopleCircle{
+  fill: #1AACAF;
+  stroke: #478BE7;
+}
+
+.objectRect{
+  fill: #FED325;
+  stroke: #DE9700;
+}
+
+.highlightedImage {
+  margin-top:30px;
+  width:100%;
+  border:3px solid #FED325;
+  overflow: hidden;
+}
+
+.personHeader{
+  font-family: sans-serif;
+}
+
+.personStats{
+  font-family: sans-serif;
+}
+.personColumnCaption {
+  width:100%;
+  font-size:.75em;
+  border:1px solid lightgray;
+  padding:3px;
+}

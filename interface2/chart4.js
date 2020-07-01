@@ -30,12 +30,14 @@ function make_chart4(){
     height = 400;
 
     var x = d3.scaleBand().range([0, width])
-    var z = d3.scaleLinear().domain([0,10]).range([0,1])
+    var colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4",
+    			  "#225ea8","#225ea8","#225ea8","#225ea8","#225ea8"];
+    var z = d3.scaleOrdinal().domain(d3.range(0,9)).range(colors)
 
 	//define svg
     var svg = d3.select("#adjacency_matrix").append("svg")
 			    .attr("width", width + margin.left + margin.right)
-			    .attr("height", height + margin.top + margin.bottom)
+			    .attr("height", height + margin.top + 2 * margin.bottom)
 			    // .style("margin-left", -margin.left + "px")
 			  .append("g")
     			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -43,6 +45,26 @@ function make_chart4(){
     var div = d3.select("#adjacency_matrix").append("div") 
               .attr("class", "tooltip_matrix")       
               .style("opacity", 0);
+
+    // var legendElementWidth = 20;
+
+    var legend = svg.selectAll(".legend")
+          			.data(d3.range(0,6), function(d) { return d; });
+
+	legend = legend.enter().append("g")
+			      .attr("transform", function(d,i){return "translate(" + i * 25 + "," + (height + 5) + ")"})
+	legend.append("rect")
+			      .attr("width", 20)
+			      .attr("height", 20)
+			      .style("fill", function(d, i) { return colors[i]; })
+
+	legend.append("text")
+	      .attr("class", "mono")
+	      .text(function(d) { return (d == 5)? "≥ " + Math.round(d): "= " + Math.round(d);; })
+	      .style('font-size','10px')
+	      .style('font-family','sans-serif')
+	      .attr("dy", 30);
+
 
 
 	var n = people.length;
@@ -154,9 +176,9 @@ function make_chart4(){
 		   .text(function(d, i) { 
 		   		var  person_name = person_person_network.nodes[i].name
 		   		if (person_name[person_name.length-2] == 'n')
-		   			return person_name[0] + person_name[person_name.length-1]; 
+		   			return 'p' + person_name[person_name.length-1]; 
 		   		else
-		   			return person_name[0] + person_name[person_name.length-2] + person_name[person_name.length-1] ;})
+		   			return 'p' + person_name[person_name.length-2] + person_name[person_name.length-1] ;})
 		   .on('click',function(d,i){
 		      	console.log(i,'clicked')
 		      	order(i)}
@@ -186,13 +208,14 @@ function make_chart4(){
 
 		function row(row) {
 		    var cell = d3.select(this).selectAll(".cell")
-		        .data(row.filter(function(d) { return d.z; }))
+		        .data(row)
 		      .enter().append("rect")
 		        .attr("class", "cell")
 		        .attr("x", function(d) { return x(d.x); })
 		        .attr("width", x.bandwidth())
 		        .attr("height", x.bandwidth())
-		        .style("fill-opacity", function(d) { return z(d.z); })
+		        .style('fill',function(d){return z(d.z)})
+		        // .style("fill-opacity", function(d) { return z(d.z); })
 		        .on('mouseover',function(d){
 		        	if (d.z == 0){
 		        		var background_color = "#eff3ff";

@@ -9,7 +9,7 @@ function make_chart3(){
   var json_path = 'i3_new_data.json'
 
   //Defining the margin conventions
-  var width = 800, height = 800;
+  var width = 900, height = 900;
 
   var margin = {top: 20, bottom: 20, left: 20, right: 20};
 
@@ -31,11 +31,9 @@ function make_chart3(){
 
   var color = function (group) {
       if (group == 1) {
-          return "#aaa"
+          return "#265999"
       } else if (group == 2) {
-          return "#fbc280"
-      } else {
-          return "#405275"
+          return "#CA9703"
       }
   }
 
@@ -102,6 +100,8 @@ function make_chart3(){
 
   var people_images_div = d3.select('#people_images');
 
+  var r_people_node = 25;
+
   // Data loading 
   d3.json(json_path, function(error, data) {
 
@@ -110,8 +110,6 @@ function make_chart3(){
     var nested_data =  d3.nest()
                          .key(function(d) { return d.Person; })
                          .entries(data);
-
-    console.log(nested_data)
 
     var person_label_table = {};
 
@@ -168,18 +166,20 @@ function make_chart3(){
                   .data(data_for_chart3.links)
                   .enter()
                   .append("line")
-                  .attr("id",function(d){return "link"+d.source.id+"_"+d.target.id})
+                  .attr("id",function(d){return "link_"+d.source.id+"_"+d.target.id})
                   .attr("class", "link")
                   .style("stroke-width", function(d){return thickness(d.normalized_value)})
                   
     var node = svg.selectAll(".node")
                   .data(data_for_chart3.nodes)
                   .enter().append("g")
-                  .attr("class", "node")
+                  .attr("class", function(d){
+                    return (d.group == 1)? "people node": "object node";
+                  })
                   .call(d3.drag()
-                  .on("start", dragstarted)
-                  .on("drag", dragged)
-                  .on("end", dragended))
+                          .on("start", dragstarted)
+                          .on("drag", dragged)
+                          .on("end", dragended))
 
     var num_people_of_label = {};
     labels.forEach(function(label){
@@ -191,198 +191,233 @@ function make_chart3(){
       })
     })
 
-    node.append('circle')
-        .attr("id",function(d){return "c" + d.id})
-        .attr('r', function(d){
-          return (d.group == 1)? 13 : 2 * num_people_of_label[d.id]})
-        .attr('fill', function (d) {
-            return color(d.group);
-        })
+    d3.selectAll('.people').append('circle')
+        .attr("id",function(d){return "c_" + d.id})
+        .attr('r', function(d){ return r_people_node})
+        .attr("class","peopleCircle")
         .attr('opacity',1.0)
-        .on("mouseover",function(d){
-          if(!hidden_node_list[d.id]){
-            if (d.group == 1){
-            // search for all labels that the person has
-            var label_list = [];
-            var label_value_dict = {};
-            data_for_chart3.links.forEach(function(link){
-              if (link.source.id == d.id){
+        .on("mouseover",function(d){ highlightPeopleNode(d);})
+        .on('mouseout',function(d){ dehighlightNode(d);})
+
+    d3.selectAll('.object').append('rect')
+        .attr("id",function(d){return "rect_" + d.id})
+        .attr("class","objectRect")
+        .attr('width', function(d){return d.id.length * 15})
+        .attr('height', function(d){return 30})
+        .attr('x',function(d){return - d.id.length * 7.5})
+        .attr('y',-15)
+        .attr("rx", 6)
+        .attr("ry", 6)
+        .attr('opacity',1.0)
+        .on("mouseover",function(d){ highlightObjectNode(d);})
+        .on('mouseout',function(d){ dehighlightNode(d);})
+
+    // var min_value = document.getElementById("minNumEdge").value
+      // var max_value = document.getElementById("maxNumEdge").value
+
+      // update_graph_by_min_max(min_value,max_value)
+
+    var showPeopleNode = function(name, isShown){
+      if (isShown){
+        d3.select("#c_"+name)
+          .attr('opacity',1.0)
+
+        d3.select("#nodeName_"+ name)
+          .attr('opacity',1.0)
+
+        d3.select("#nodeStats_"+ name)
+          .attr('opacity', 1.0)
+      }
+      else{
+        d3.select("#c_"+name)
+          .attr('opacity',0)
+
+        d3.select("#nodeName_"+ name)
+          .attr('opacity',0)
+
+        d3.select("#nodeStats_"+ name)
+          .attr('opacity', 0)
+      }
+    }
+
+    var showObjectNode = function(name, isShown){
+      if (isShown){
+        d3.select("#rect_"+name)
+          .attr('opacity',1.0)
+
+        d3.select("#nodeName_"+name)
+              .attr('opacity',1.0)
+
+        d3.select("#nodeStats_"+ name)
+              .attr('opacity', 1.0)
+      }
+      else{
+        d3.select("#rect_"+name)
+          .attr('opacity',0)
+
+        d3.select("#nodeName_"+name)
+              .attr('opacity',0)
+
+        d3.select("#nodeStats_"+ name)
+              .attr('opacity', 0)
+      }
+    }
+
+    var showLink = function(person,object,isShown){
+      if (isShown){
+        d3.select("#link_"+person+"_"+object)
+          .attr('opacity',1.0)
+      }
+      else{
+        d3.select("#link_"+person+"_"+object)
+          .attr('opacity',0)
+      }
+    }
+
+    var highlightObjectNode = function(d){
+      if(!hidden_node_list[d.id]){
+        var people_list = [];
+        data_for_chart3.links.forEach(function(link){
+          
+          if (link.target.id == d.id){
+            people_list.push(link.source.id);
+          }
+        })
+
+        data_for_chart3.links.forEach(function(link){
+          if (link.target.id != d.id || !people_list.includes(link.source.id)){
+
+            showLink(link.source.id, link.target.id, false);
+            showPeopleNode(link.source.id, false);
+            showObjectNode(link.target.id, false);
+          }
+        })
+
+        var numbers = [];
+        people_list.forEach(function(person){
+
+          d3.select("#c_"+person)
+            .attr('r',r_people_node)
+            .attr('fill',"#8dd3c7")
+            .attr('opacity',1.0)
+
+          d3.select("#nodeName_"+person)
+            .attr('opacity',1.0)
+
+          d3.select("#nodeStats_"+person)
+            .attr('opacity',1.0)
+            .text(function(){ return person_label_table[person][d.id] + "/" + person_numphoto_array[person] })
+
+          numbers.push(person_label_table[person][d.id]/person_numphoto_array[person])
+        })
+
+        d3.selectAll("#nodeStats_"+d.id)
+          .attr('opacity',1.0)
+          .text(function(){ return math.mean(numbers).toFixed(5) + " +/- " + math.std(numbers).toFixed(5);})
+
+        showImage(d.id);
+        showPersonImages(people_list,d.id);
+      }
+    }
+
+    var highlightPeopleNode = function(d){
+      if(!hidden_node_list[d.id]){
+          // search for all labels that the person has
+          var label_list = [];
+          var label_value_dict = {};
+          data_for_chart3.links.forEach(function(link){
+            if (link.source.id == d.id){
+              if(!hidden_node_list[link.target.id]){
                 label_list.push(link.target.id);
                 label_value_dict[link.target.id] = link.value;
               }
-            })
-
-            var maxValue = 0;
-            for (var label in label_value_dict){
-              if(label_value_dict[label] > maxValue){
-                maxValue = label_value_dict[label]
-              }
             }
+          })
 
-            label_list.forEach(function(label){
-              d3.selectAll("#c"+label)
-                .attr('r',2 * num_people_of_label[label])
+          var maxValue = 0;
+          for (var label in label_value_dict){
+            if(label_value_dict[label] > maxValue){
+              maxValue = label_value_dict[label]
+            }
+          }
+
+          // highlight the labels that the person node go to
+          label_list.forEach(function(label){
+            if(!hidden_node_list[label]){
+              d3.selectAll("#rect_"+label)
+                .attr('width', function(d){return label.length * 15})
+                .attr('height', function(d){return 30})
                 .attr('fill',"#fb8072")
-            })
+            }
+          })
 
-            var people_list = [];
-            var person_value_dict = {};
+          var people_list = [];
+          var person_value_dict = {};
 
-            data_for_chart3.links.forEach(function(link){
-              if (label_list.includes(link.target.id)){
+          data_for_chart3.links.forEach(function(link){
+            if (label_list.includes(link.target.id)){
+              if(!hidden_node_list[link.source.id]){
                 people_list.push(link.source.id);
                 person_value_dict[link.source.id] = link.value;
               }
-              else{
-                d3.select("#link"+link.source.id+"_"+link.target.id)
-                  .attr('opacity',0)
-
-                d3.selectAll("#c"+link.source.id)
-                  .attr('opacity',0)
-
-                d3.selectAll("#c"+link.target.id)
-                  .attr('opacity',0)
-
-                d3.selectAll("#text"+link.target.id)
-                  .attr('opacity',0)
-
-                d3.selectAll("#text"+link.source.id)
-                  .attr('opacity',0)
-
-                d3.selectAll("#tspan"+link.source.id+"_"+"number")
-                  .attr('opacity',0)
-              }
-            })
-
-            var maxValue = 0;
-            for (var person in person_value_dict){
-              if(person_value_dict[person] > maxValue){
-                maxValue = person_value_dict[person]
-              }
             }
-
-            people_list.forEach(function(person){
-              d3.selectAll("#c"+person)
-                .attr('r',13)
-                .attr('fill',"#8dd3c7")
-                .attr('opacity',1.0)
-
-              d3.selectAll("#text"+person)
-                .attr('opacity',1.0)
-            })
-
+            else{
+              showLink(link.source.id,link.target.id,false);
+              showPeopleNode(link.source.id,false);
+              showObjectNode(link.target.id,false);
             }
-            if (d.group == 2){
-          
-              var people_list = [];
-              data_for_chart3.links.forEach(function(link){
-                
-                if (link.target.id == d.id){
-                  people_list.push(link.source.id);
-                }
-              })
+          })
 
-              data_for_chart3.links.forEach(function(link){
-                if (link.target.id != d.id || !people_list.includes(link.source.id)){
-                  d3.select("#link"+link.source.id+"_"+link.target.id)
-                    .attr('opacity',0)
-
-                  d3.selectAll("#c"+link.source.id)
-                    .attr('opacity',0)
-
-                  d3.selectAll("#c"+link.target.id)
-                    .attr('opacity',0)
-
-                  d3.selectAll("#text"+link.target.id)
-                    .attr('opacity',0)
-
-                  d3.selectAll("#text"+link.source.id)
-                    .attr('opacity',0)
-
-                  d3.selectAll("#tspan"+link.source.id+"_"+"number")
-                    .attr('opacity',0)
-                }
-              })
-
-              var numbers = [];
-              people_list.forEach(function(person){
-                d3.selectAll("#c"+person)
-                  .attr('r',13)
-                  .attr('fill',"#8dd3c7")
-                  .attr('opacity',1.0)
-
-                d3.selectAll("#text"+person)
-                  .attr('opacity',1.0)
-
-                d3.selectAll("#tspan"+person+"_"+"number")
-                  .attr('opacity',1.0)
-                  .text(function(){
-                    return person_label_table[person][d.id] + "/" + person_numphoto_array[person]
-                  })
-
-                numbers.push(person_label_table[person][d.id]/person_numphoto_array[person])
-              })
-
-              d3.selectAll("#tspan"+d.id+"_"+"number")
-                .attr('opacity',1.0)
-                .text(function(){
-                  return math.mean(numbers).toFixed(5) + " +/- " + math.std(numbers).toFixed(5);
-                })
-
-              showImage(d.id);
-              console.log(data_for_chart3.links)
-              showPersonImages(people_list,d.id);
+          var maxValue = 0;
+          for (var person in person_value_dict){
+            if(person_value_dict[person] > maxValue){
+              maxValue = person_value_dict[person]
+            }
           }
 
-            d3.select(this)
-              .attr('fill',"gold")
+          people_list.forEach(function(person){
+            d3.select("#c_"+person)
+              .attr('r',r_people_node)
+              .attr('fill',"#8dd3c7")
+              .attr('opacity',1.0)
 
-          }
-        })
-        .on('mouseout',function(d){
-          labels.forEach(function(label){
-            d3.select('#c'+label)
-              .attr('r', function(){return 2 * num_people_of_label[label]})
-              .attr('fill', function (d) {return color(2);})
+            d3.select("#nodeName_"+person)
               .attr('opacity',1.0)
           })
 
-          people.forEach(function(person){
-            d3.select('#c'+person)
-              .attr('r', 13)
-              .attr('fill', function (d) {return color(1);})
-              .attr('opacity',1.0)
-          })
+          d3.select(this)
+            .attr('fill',"gold")
+      }
+    }
 
-          data_for_chart3.links.forEach(function(link){
-            d3.select("#link"+link.source.id+"_"+link.target.id)
-                  .attr('opacity',1.0)
+    var dehighlightNode = function(d){
 
-            d3.selectAll("#c"+link.source.id)
-              .attr('opacity',1.0)
+      labels.forEach(function(label){
+        if(!hidden_node_list[label]){
+          showObjectNode(label,true);
+        }
+      })
 
-            d3.selectAll("#c"+link.target.id)
-              .attr('opacity',1.0)
+      people.forEach(function(person){
+        if(!hidden_node_list[person]){
+          showPeopleNode(person,true);
+          d3.select("#nodeStats_"+person)
+            .attr('opacity',0)
+        }
+      })
 
-            d3.selectAll("#text"+link.target.id)
-              .attr('opacity',1.0)
+      data_for_chart3.links.forEach(function(link){
+        if(!hidden_node_list[link.source.id]  && !hidden_node_list[link.target.id]){
+          showLink(link.source.id, link.target.id, true);
+        }
+      })
 
-            d3.selectAll("#text"+link.source.id)
-              .attr('opacity',1.0)
+      // var min_value = document.getElementById("minNumEdge").value
+      // var max_value = document.getElementById("maxNumEdge").value
 
-            d3.selectAll("#tspan"+link.source.id+"_"+"number")
-              .attr('opacity',0)
+      // update_graph_by_min_max(min_value,max_value)
+    }
 
-            d3.selectAll("#tspan"+link.target.id+"_"+"number")
-                .attr('opacity',0)
-
-          })
-
-          var min_value = document.getElementById("minNumEdge").value
-          var max_value = document.getElementById("maxNumEdge").value
-
-          update_graph_by_min_max(min_value,max_value)
-        })
 
     var showImage = function(label){
       d3.select('#hover_image')
@@ -415,7 +450,8 @@ function make_chart3(){
         columnDiv.appendChild(personSpan);
 
         var personStats = document.createElement('span');
-        personStats.innerHTML = '25/63 images<hr>';
+        personStats.innerHTML = person_label_table[person][label] + "/" + person_numphoto_array[person]+ ' images<hr>';
+        personStats.classList.add('personStats');  
         columnDiv.appendChild(personStats);
 
         columnDiv.appendChild(document.createElement("br"));
@@ -468,12 +504,10 @@ function make_chart3(){
           columnDiv.appendChild(iimg);
 
           var pictureName = document.createElement('div')
-          var pictureNameText = '<b>Picture 32</b><br/>';//'<b>'+image_list[j].Path.split('.').replace('MC2-Image-Data/'+person+'/'+person,'') + '</b><br>';
+          var pictureNameText = '<b>'+ image_list[j].Person + '_' + image_list[j].Pic + '</b><br/>';
           
           if (caption_text[image_list[j].Person+"_"+image_list[j].Pic]){
             pictureNameText += caption_text[image_list[j].Person+"_"+image_list[j].Pic];
-            
-            // console.log(caption_text[image_list[j].Person+"_"+image_list[j].Pic])
           } 
           pictureName.classList.add('personColumnCaption');     
           pictureName.innerHTML = pictureNameText;
@@ -495,97 +529,76 @@ function make_chart3(){
     });
 
     var update_graph_by_min_max = function(min_value, max_value){
-      var hidden_label_list = [];
+      // var hidden_label_list = [];
       data_for_chart3.links.forEach(function(link){
         var label = link.target.id;
         if (num_people_of_label[link.target.id] < min_value){
 
-          d3.select("#link"+link.source.id+"_"+link.target.id)
-            .attr('opacity',0)
+          showLink(link.source.id,link.target.id,false);
+          showObjectNode(link.target.id,false);
 
-          d3.selectAll("#c"+link.target.id)
-            .attr('opacity',0)
-
-          d3.selectAll("#text"+link.target.id)
-            .attr('opacity',0)
-          hidden_label_list.push(label);
-
-          hidden_node_list[link.source.id] = true;
           hidden_node_list[link.target.id] = true;
         }
         else if (num_people_of_label[link.target.id] > max_value) {
-          d3.select("#link"+link.source.id+"_"+link.target.id)
-            .attr('opacity',0)
+          showLink(link.source.id,link.target.id,false);
+          showObjectNode(link.target.id,false);
 
-          d3.selectAll("#c"+link.target.id)
-            .attr('opacity',0)
-
-          d3.selectAll("#text"+link.target.id)
-            .attr('opacity',0)
-          hidden_label_list.push(label);
-
-          hidden_node_list[link.source.id] = true;
           hidden_node_list[link.target.id] = true;
         }
         else{
-          d3.select("#link"+link.source.id+"_"+link.target.id)
-            .attr('opacity',1.0)
-
-          d3.selectAll("#c"+link.target.id)
-            .attr('opacity',1.0)
-
-          d3.selectAll("#text"+link.target.id)
-            .attr('opacity',1.0)
-
+          showLink(link.source.id,link.target.id,true);
+          showObjectNode(link.target.id,true);
 
           hidden_node_list[link.source.id] = false;
           hidden_node_list[link.target.id] = false;
         }
-    })
-
-    // hide isolated people nodes
-    people.forEach(function(person){
-      var num_edges = 0;
-      var num_edges_to_hide = 0;
-      labels.forEach(function(label){
-        if (person_label_table[person][label]){
-          num_edges += 1;
-          if(hidden_label_list.includes(label)){
-            num_edges_to_hide += 1;
-          }
-        }
       })
-      if (num_edges == num_edges_to_hide){
-        
-        d3.selectAll("#c"+person)
-          .attr('opacity',0)
 
-        d3.selectAll("#text"+person)
-          .attr('opacity',0)
-      }
-    })
 
-      
+
+      // hide isolated people nodes
+      people.forEach(function(person){
+        var num_edges = 0;
+        var num_edges_to_hide = 0;
+        labels.forEach(function(label){
+          if (person_label_table[person][label]){
+            num_edges += 1;
+            if(hidden_node_list[label]){
+              num_edges_to_hide += 1;
+            }
+          }
+        })
+        if (num_edges == num_edges_to_hide){ 
+          hidden_node_list[person] = true; 
+          showPeopleNode(person,false);
+        }
+      })     
     }
-    
 
-    node.append("text")
-        .append("tspan")
-        .attr('id',function(d){return "text"+d.id})
-        .attr("dx", -18)
-        .attr("dy", 8)
-        .style("font-family", "overwatch")
-        .style("font-size", "18px")
-        .text(function (d) {return d.id})
+    d3.selectAll(".people").append("text")
+                            .attr('class', 'nodeName')
+                            .attr('id',function(d){return "nodeName_"+d.id})
+                            .attr("dy", 5)
+                            .text(function (d) {
+                              return (d.id[d.id.length-2] == 'n')? 'p' + d.id[d.id.length-1]: 'p' + d.id[d.id.length-2] + d.id[d.id.length-1]
+                              })
 
-    node.selectAll("text")
-        .append("tspan")
-        .attr('id',function(d){return "tspan"+d.id+"_"+"number"})
-        .attr("dx", -36)
-        .attr("dy", 16)
-        .style("font-family", "overwatch")
-        .style("font-size", "18px")
-        .text(" ")
+    d3.selectAll(".object").append("text")
+                           .attr('class', 'nodeName')
+                           .attr('id',function(d){return "nodeName_"+d.id})
+                           .text(function (d) {return d.id})
+
+    d3.selectAll(".people").append("text")
+                           .attr('class','nodeStats')
+                           .attr('id',function(d){return "nodeStats_"+d.id})
+                           .attr("dy", 18)
+                           .text(" ")
+
+    d3.selectAll(".object").append("text")
+                           .attr('class','nodeStats')
+                           .attr('id',function(d){return "nodeStats_"+d.id})
+                           .attr("dy", 10)
+                           .text(" ")
 
     force.on("tick", function () {
         link.attr("x1", function (d) {
@@ -604,6 +617,12 @@ function make_chart3(){
             return "translate(" + d.x + "," + d.y + ")";
         });
     });
+
+
+    var min_value = document.getElementById("minNumEdge").value
+    var max_value = document.getElementById("maxNumEdge").value
+
+    update_graph_by_min_max(min_value,max_value)
 
   });
 }

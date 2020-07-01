@@ -77,7 +77,7 @@ function make_chart1(){
     svg.selectAll("bar")
       .data(data_for_chart1)
     .enter().append("rect")
-      .style("fill", "steelblue")
+      .style("fill", "#FED325")
       .attr("x", function(d) { return x(d.Label); })
       .attr("width", x.bandwidth())
       .attr("y", function(d,i) { return y(d.NumPerson); })
@@ -86,11 +86,13 @@ function make_chart1(){
     // add the x Axis
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
+        .attr('class','.x-axis')
         .call(d3.axisBottom(x).ticks(10))
       .selectAll("text")  
         .attr("y", 10)
         .attr("x", 10)
         .style('font-size','14')
+        .style('font-family','sans-serif')
         .attr("dy", ".35em")
         .attr("transform", "rotate(45)")
         .style("text-anchor", "start");
